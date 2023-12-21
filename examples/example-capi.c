@@ -5,6 +5,7 @@
 
 
 
+
 void matmul(int n, int nnz, int *ia, int *ja, double *a, double *u, double *v)
 {
   int i,j;
@@ -104,8 +105,10 @@ int main(int argc, char** argv)
   int*ia,*ja;
   double *a,*rhs;
   double *u,*v;
-  int iters;
-  double error,myerror;
+  double myerror;
+  amgclc_info info;
+  amgclc_handle handle;
+  
   int i;
   printf("main:\n");
 
@@ -125,9 +128,25 @@ int main(int argc, char** argv)
     u[i]=1.0;
     v[i]=1.0;
   }
-  
-  solve(n,nnz,ia,ja,a,u,v, &iters, &error);
 
+  char *params="{\
+    'solver': {\
+      'type': 'bicgstab',\
+      'tol': 0.001,\
+      'maxiter': 10},\
+    'precond': {\
+      'coarsening': {\
+        'type': 'smoothed_aggregation'},\
+        'relax': {\
+        'type': 'spai0'}\
+    }\
+}";
+  
+
+  
+  handle=create_solver(n,ia,ja,a,params);
+  info=apply_solver(handle,u,v);
+  destroy_solver(handle);
   matmul(n,nnz,ia,ja,a,u,v);
 
   myerror=0.0;
@@ -136,7 +155,7 @@ int main(int argc, char** argv)
     myerror+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
   myerror=sqrt(myerror);
-  printf("iters=%d error=%e myerror=%e\n",iters,error,myerror);
+  printf("iters=%d error=%e myerror=%e\n",info.iters,info.error,myerror);
 
   free(a);
   free(ia);
