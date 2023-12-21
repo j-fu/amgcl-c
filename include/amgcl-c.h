@@ -13,7 +13,7 @@ typedef struct{
 
 
 amgclcDAMGSolver amgclcDAMGSolverCreate(int n, int *ia, int *ja, double *a, char *params);
-amgclcInfo     amgclcDAMGSolverApply(amgclcDAMGSolver solver, double *u, double *v);
+amgclcInfo amgclcDAMGSolverApply(amgclcDAMGSolver solver, double *sol, double *rhs);
 void amgclcDAMGSolverDestroy(amgclcDAMGSolver solver);
 
 #endif

@@ -16,56 +16,87 @@ extern "C"
 {
 #include "amgcl-c.h"
 }
-typedef amgcl::backend::builtin<double> Backend;
-
-typedef amgcl::make_solver<
-    amgcl::amg<
-        Backend,
-        amgcl::runtime::coarsening::wrapper,
-        amgcl::runtime::relaxation::wrapper
-        >,
-    amgcl::runtime::solver::wrapper<Backend>
-    > Solver;
 
 
-extern "C" amgclcDAMGSolver amgclcDAMGSolverCreate(int n,int *ia, int *ja, double *a,char *params)
+boost::property_tree::ptree boost_params(char *params)
 {
-  amgclcDAMGSolver solver;
-  int nnz;
-  
-  nnz=ia[n+1];
+  boost::property_tree::ptree prm;
+  std::stringstream ssparams(std::regex_replace(std::string(params), std::regex("\'"), "\""));
+  boost::property_tree::json_parser::read_json(ssparams,prm);
+
+  // std::ostringstream os;
+  // boost::property_tree::json_parser::write_json(os,prm);
+  // std::cout << os.str() << std::endl;
+  return prm;
+}
+
+auto make_matrix_tuple(int n,int *ia, int *ja, double *a)
+{
+  int nnz=ia[n+1];
   auto ptr=amgcl::make_iterator_range(ia, ia + n+1);
   auto col=amgcl::make_iterator_range(ja, ja + nnz);
   auto val=amgcl::make_iterator_range(a, a + n);
-  
-  boost::property_tree::ptree prm;
-  
- 
-  std::stringstream ssparams(std::regex_replace(std::string(params), std::regex("\'"), "\""));
-  
-  boost::property_tree::json_parser::read_json(ssparams,prm);
-  
-  solver.handle=static_cast<void*>(new Solver( std::make_tuple(n, ptr, col, val), prm ));
+  return std::make_tuple(n, ptr, col, val);
+}
+
+template <typename S, typename T> void destroy(S solver)
+{  
+  delete static_cast<T*>(solver.handle);
+}
+
+template <typename S, typename T> S create(int n,int *ia, int *ja, double *a, char *params)
+{
+  S solver;
+  solver.handle=static_cast<void*>(new T(make_matrix_tuple(n,ia,ja,a), boost_params(params) ));
   return solver;
 }
 
-
-extern "C" amgclcInfo amgclcDAMGSolverApply(amgclcDAMGSolver _solver, double *u, double *v)
+template <typename S, typename T> amgclcInfo apply(S _solver, double *sol, double *rhs)
 {
   amgclcInfo info;
-  Solver *solver = static_cast<Solver*>(_solver.handle);
+  auto solver = static_cast<T*>(_solver.handle);
   
-  size_t n = amgcl::backend::rows(solver->system_matrix());
-  auto U=amgcl::make_iterator_range(u, u + n);
-  auto V=amgcl::make_iterator_range(v, v + n);
+  auto n = amgcl::backend::rows(solver->system_matrix());
+  auto Sol=amgcl::make_iterator_range(sol, sol + n);
+  auto Rhs=amgcl::make_iterator_range(rhs, rhs + n);
   
-  std::tie(info.iters, info.error) = (*solver)(V, U);
+  std::tie(info.iters, info.error) = (*solver)(Rhs,Sol);
   
   return info;
 }
 
 
-extern "C" void amgclcDAMGSolverDestroy(amgclcDAMGSolver solver)
+//
+//  Built-in backend for doubles
+// 
+typedef amgcl::backend::builtin<double> DBuiltinBackend;
+
+
+//
+// AMG Solver
+// See https://amgcl.readthedocs.io/en/latest/design.html?highlight=runtime#runtime-interface
+//
+typedef amgcl::make_solver<
+  amgcl::amg<
+    DBuiltinBackend,
+    amgcl::runtime::coarsening::wrapper,
+    amgcl::runtime::relaxation::wrapper
+    >,
+  amgcl::runtime::solver::wrapper<DBuiltinBackend>
+  > DAMGSolver;
+
+amgclcDAMGSolver amgclcDAMGSolverCreate(int n,int *ia, int *ja, double *a,char *params)
 {
-  delete static_cast<Solver*>(solver.handle);
+  return create<amgclcDAMGSolver,DAMGSolver>(n,ia,ja,a,params);
 }
+
+amgclcInfo amgclcDAMGSolverApply(amgclcDAMGSolver solver, double *sol, double *rhs)
+{
+  return apply<amgclcDAMGSolver,DAMGSolver>(solver,sol,rhs);
+}
+
+void amgclcDAMGSolverDestroy(amgclcDAMGSolver solver)
+{
+  destroy<amgclcDAMGSolver,DAMGSolver>(solver);
+}
+
