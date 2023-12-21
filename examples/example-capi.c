@@ -105,7 +105,7 @@ int main(int argc, char** argv)
   int*ia,*ja;
   double *a,*rhs;
   double *u,*v;
-  double myerror;
+  double myresidual;
   amgclcInfo info;
   amgclcDAMGSolver amgsolver;
   amgclcDRLXSolver rlxsolver;
@@ -152,13 +152,13 @@ int main(int argc, char** argv)
   amgclcDAMGSolverDestroy(amgsolver);
   matmul(n,nnz,ia,ja,a,u,v);
 
-  myerror=0.0;
+  myresidual=0.0;
   for(i=0;i<n;i++)
   {
-    myerror+=(v[i]-1.0)*(v[i]-1.0)/n;
+    myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
-  myerror=sqrt(myerror);
-  printf("amg: iters=%d error=%e myerror=%e\n",info.iters,info.error,myerror);
+  myresidual=sqrt(myresidual);
+  printf("amg: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
 
 
 
@@ -181,13 +181,13 @@ int main(int argc, char** argv)
   amgclcDRLXSolverDestroy(rlxsolver);
   matmul(n,nnz,ia,ja,a,u,v);
 
-  myerror=0.0;
+  myresidual=0.0;
   for(i=0;i<n;i++)
   {
-    myerror+=(v[i]-1.0)*(v[i]-1.0)/n;
+    myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
-  myerror=sqrt(myerror);
-  printf("rlx: iters=%d error=%e myerror=%e\n",info.iters,info.error,myerror);
+  myresidual=sqrt(myresidual);
+  printf("rlx: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
 
 
 
@@ -202,13 +202,13 @@ int main(int argc, char** argv)
   amgclcDRLXPreconDestroy(rlxprecon);
   matmul(n,nnz,ia,ja,a,u,v);
 
-  myerror=0.0;
+  myresidual=0.0;
   for(i=0;i<n;i++)
   {
-    myerror+=(v[i]-1.0)*(v[i]-1.0)/n;
+    myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
-  myerror=sqrt(myerror);
-  printf("rlxprecon: myerror=%e\n",myerror);
+  myresidual=sqrt(myresidual);
+  printf("rlxprecon: myresidual=%e\n",myresidual);
 
 
   for(i=0;i<n;i++)
@@ -222,13 +222,13 @@ int main(int argc, char** argv)
   amgclcDAMGPreconDestroy(amgprecon);
   matmul(n,nnz,ia,ja,a,u,v);
 
-  myerror=0.0;
+  myresidual=0.0;
   for(i=0;i<n;i++)
   {
-    myerror+=(v[i]-1.0)*(v[i]-1.0)/n;
+    myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
-  myerror=sqrt(myerror);
-  printf("amgprecon: myerror=%e\n",myerror);
+  myresidual=sqrt(myresidual);
+  printf("amgprecon: myresidual=%e\n",myresidual);
 
 
 

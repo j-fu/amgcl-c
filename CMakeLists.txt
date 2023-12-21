@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
+
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Build type")
     message(STATUS "No build type selected, default to ${CMAKE_BUILD_TYPE}")
@@ -8,16 +9,15 @@ project(AMGCL-C C CXX)
 
 find_package(OpenMP REQUIRED)
 
-message(STATUS "OpenMP_CXX_FLAGS : ${OpenMP_CXX_FLAGS}")
-message(STATUS "OpenMP_C_FLAGS : ${OpenMP_C_FLAGS}")
-
 find_package(Boost COMPONENTS
     program_options
     serialization
-    unit_test_framework
     )
 
 include(ExternalProject)
+
+# This  just downloads and unpacks amgcl to build/amgcl.
+# No compilation here as we access it as a header only library.
 set(AMGCL_DIR "${CMAKE_CURRENT_BINARY_DIR}/amgcl")
 ExternalProject_Add(AMGCL
   URL https://github.com/ddemidov/amgcl/archive/refs/tags/1.4.4.tar.gz
@@ -38,4 +38,3 @@ ExternalProject_Add(AMGCL
 include_directories(include)
 add_subdirectory(src)
 add_subdirectory(examples)
-

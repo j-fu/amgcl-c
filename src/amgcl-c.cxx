@@ -61,7 +61,7 @@ template <typename S, typename T> amgclcInfo solve(S _solver, double *sol, doubl
   auto Sol=amgcl::make_iterator_range(sol, sol + n);
   auto Rhs=amgcl::make_iterator_range(rhs, rhs + n);
   
-  std::tie(info.iters, info.error) = (*solver)(Rhs,Sol);
+  std::tie(info.iters, info.residual) = (*solver)(Rhs,Sol);
   
   return info;
 }
