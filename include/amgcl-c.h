@@ -4,13 +4,16 @@
 typedef struct {
   int iters;
   double error;
-}  amgclc_info;
+}  amgclcInfo;
 
 
-typedef void* amgclc_handle;
+typedef struct{
+  void *handle;
+} amgclcDAMGSolver;
 
-amgclc_handle create_solver(int n, int *ia, int *ja, double *a, char *params);
-amgclc_info   apply_solver(amgclc_handle solver, double *u, double *v);
-void destroy_solver(amgclc_handle solver);
+
+amgclcDAMGSolver amgclcDAMGSolverCreate(int n, int *ia, int *ja, double *a, char *params);
+amgclcInfo     amgclcDAMGSolverApply(amgclcDAMGSolver solver, double *u, double *v);
+void amgclcDAMGSolverDestroy(amgclcDAMGSolver solver);
 
 #endif

@@ -31,8 +31,8 @@ ExternalProject_Add(AMGCL
   )
 
 
-add_subdirectory(src)
 include_directories(include)
+add_subdirectory(src)
 add_subdirectory(examples)
 
 set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include")

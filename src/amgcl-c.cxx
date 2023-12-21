@@ -28,8 +28,9 @@ typedef amgcl::make_solver<
     > Solver;
 
 
-extern "C" amgclc_handle create_solver(int n,int *ia, int *ja, double *a,char *params)
+extern "C" amgclcDAMGSolver amgclcDAMGSolverCreate(int n,int *ia, int *ja, double *a,char *params)
 {
+  amgclcDAMGSolver solver;
   int nnz;
   
   nnz=ia[n+1];
@@ -44,14 +45,15 @@ extern "C" amgclc_handle create_solver(int n,int *ia, int *ja, double *a,char *p
   
   boost::property_tree::json_parser::read_json(ssparams,prm);
   
-  return static_cast<amgclc_handle>(new Solver( std::make_tuple(n, ptr, col, val), prm ));
+  solver.handle=static_cast<void*>(new Solver( std::make_tuple(n, ptr, col, val), prm ));
+  return solver;
 }
 
 
-extern "C" amgclc_info apply_solver(amgclc_handle _solver, double *u, double *v)
+extern "C" amgclcInfo amgclcDAMGSolverApply(amgclcDAMGSolver _solver, double *u, double *v)
 {
-  amgclc_info info;
-  Solver *solver = static_cast<Solver*>(_solver);
+  amgclcInfo info;
+  Solver *solver = static_cast<Solver*>(_solver.handle);
   
   size_t n = amgcl::backend::rows(solver->system_matrix());
   auto U=amgcl::make_iterator_range(u, u + n);
@@ -63,7 +65,7 @@ extern "C" amgclc_info apply_solver(amgclc_handle _solver, double *u, double *v)
 }
 
 
-extern "C" void destroy_solver(amgclc_handle _solver)
+extern "C" void amgclcDAMGSolverDestroy(amgclcDAMGSolver solver)
 {
-  delete static_cast<Solver*>(_solver);
+  delete static_cast<Solver*>(solver.handle);
 }

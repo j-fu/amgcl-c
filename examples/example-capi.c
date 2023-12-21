@@ -106,8 +106,8 @@ int main(int argc, char** argv)
   double *a,*rhs;
   double *u,*v;
   double myerror;
-  amgclc_info info;
-  amgclc_handle handle;
+  amgclcInfo info;
+  amgclcDAMGSolver amgsolver;
   
   int i;
   printf("main:\n");
@@ -144,9 +144,9 @@ int main(int argc, char** argv)
   
 
   
-  handle=create_solver(n,ia,ja,a,params);
-  info=apply_solver(handle,u,v);
-  destroy_solver(handle);
+  amgsolver=amgclcDAMGSolverCreate(n,ia,ja,a,params);
+  info=amgclcDAMGSolverApply(amgsolver,u,v);
+  amgclcDAMGSolverDestroy(amgsolver);
   matmul(n,nnz,ia,ja,a,u,v);
 
   myerror=0.0;
