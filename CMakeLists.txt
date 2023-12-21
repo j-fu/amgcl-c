@@ -6,6 +6,10 @@ endif()
 
 project(AMGCL-C C CXX)
 
+find_package(OpenMP REQUIRED)
+
+message(STATUS "OpenMP_CXX_FLAGS : ${OpenMP_CXX_FLAGS}")
+message(STATUS "OpenMP_C_FLAGS : ${OpenMP_C_FLAGS}")
 
 find_package(Boost COMPONENTS
     program_options
@@ -35,4 +39,3 @@ include_directories(include)
 add_subdirectory(src)
 add_subdirectory(examples)
 
-set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include")
