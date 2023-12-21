@@ -108,6 +108,9 @@ int main(int argc, char** argv)
   double myerror;
   amgclcInfo info;
   amgclcDAMGSolver amgsolver;
+  amgclcDRLXSolver rlxsolver;
+  amgclcDRLXPrecon rlxprecon;
+  amgclcDAMGPrecon amgprecon;
   
   int i;
   printf("main:\n");
@@ -129,14 +132,14 @@ int main(int argc, char** argv)
     v[i]=1.0;
   }
 
-  char *params="{\
+  char *amgparams="{\
     'solver': {\
       'type': 'bicgstab',\
-      'tol': 0.001,\
+      'tol': 1.0e-10,\
       'maxiter': 10},\
     'precond': {\
       'coarsening': {\
-        'type': 'smoothed_aggregation'},\
+        'type': 'smoothed_aggregation', 'relax': 1.0},\
         'relax': {\
         'type': 'spai0'}\
     }\
@@ -144,7 +147,7 @@ int main(int argc, char** argv)
   
 
   
-  amgsolver=amgclcDAMGSolverCreate(n,ia,ja,a,params);
+  amgsolver=amgclcDAMGSolverCreate(n,ia,ja,a,amgparams);
   info=amgclcDAMGSolverApply(amgsolver,u,v);
   amgclcDAMGSolverDestroy(amgsolver);
   matmul(n,nnz,ia,ja,a,u,v);
@@ -155,8 +158,81 @@ int main(int argc, char** argv)
     myerror+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
   myerror=sqrt(myerror);
-  printf("iters=%d error=%e myerror=%e\n",info.iters,info.error,myerror);
+  printf("amg: iters=%d error=%e myerror=%e\n",info.iters,info.error,myerror);
 
+
+
+
+    char *rlxparams="{\
+    'solver': {'type': 'bicgstab','tol': 1.0e-10, 'maxiter': 100 },\
+    'precond': {'type': 'ilu0' }\
+    }";
+
+
+
+  for(i=0;i<n;i++)
+  {
+    u[i]=1.0;
+    v[i]=1.0;
+  }
+
+  rlxsolver=amgclcDRLXSolverCreate(n,ia,ja,a,rlxparams);
+  info=amgclcDRLXSolverApply(rlxsolver,u,v);
+  amgclcDRLXSolverDestroy(rlxsolver);
+  matmul(n,nnz,ia,ja,a,u,v);
+
+  myerror=0.0;
+  for(i=0;i<n;i++)
+  {
+    myerror+=(v[i]-1.0)*(v[i]-1.0)/n;
+  }
+  myerror=sqrt(myerror);
+  printf("rlx: iters=%d error=%e myerror=%e\n",info.iters,info.error,myerror);
+
+
+
+  for(i=0;i<n;i++)
+  {
+    u[i]=1.0;
+    v[i]=1.0;
+  }
+
+  rlxprecon=amgclcDRLXPreconCreate(n,ia,ja,a,rlxparams);
+  amgclcDRLXPreconApply(rlxprecon,u,v);
+  amgclcDRLXPreconDestroy(rlxprecon);
+  matmul(n,nnz,ia,ja,a,u,v);
+
+  myerror=0.0;
+  for(i=0;i<n;i++)
+  {
+    myerror+=(v[i]-1.0)*(v[i]-1.0)/n;
+  }
+  myerror=sqrt(myerror);
+  printf("rlxprecon: myerror=%e\n",myerror);
+
+
+  for(i=0;i<n;i++)
+  {
+    u[i]=1.0;
+    v[i]=1.0;
+  }
+
+  amgprecon=amgclcDAMGPreconCreate(n,ia,ja,a,amgparams);
+  amgclcDAMGPreconApply(amgprecon,u,v);
+  amgclcDAMGPreconDestroy(amgprecon);
+  matmul(n,nnz,ia,ja,a,u,v);
+
+  myerror=0.0;
+  for(i=0;i<n;i++)
+  {
+    myerror+=(v[i]-1.0)*(v[i]-1.0)/n;
+  }
+  myerror=sqrt(myerror);
+  printf("amgprecon: myerror=%e\n",myerror);
+
+
+
+  
   free(a);
   free(ia);
   free(ja);
