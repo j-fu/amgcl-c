@@ -1,5 +1,10 @@
 #ifndef AMGCL_C_H
 #define AMGCL_C_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
   \file amgcl-c.h
   \brief Yet another C-API for amgcl-c.
@@ -59,5 +64,8 @@ amgclcDRLXPrecon amgclcDRLXPreconCreate(int n, int *ia, int *ja, double *a, char
 void amgclcDRLXPreconApply(amgclcDRLXPrecon solver, double *sol, double *rhs);
 void amgclcDRLXPreconDestroy(amgclcDRLXPrecon solver);
 
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif
