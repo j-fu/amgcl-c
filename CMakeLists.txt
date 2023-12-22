@@ -4,9 +4,20 @@ if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, default to ${CMAKE_BUILD_TYPE}")
 endif()
 
+# Set  CMAKE_EXPORT_PACKAGE_REGISTRY  for exporting via user registry.
+# See https://cmake.org/cmake/help/latest/command/export.html#exporting-packages
+
 project(AMGCL-C C CXX)
 
-set(PACKAGE_VERSION   0.1.0)
+include(GNUInstallDirs)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+set(AMGCL-C_MAJOR_VERSION 0)
+set(AMGCL-C_MINOR_VERSION 1)
+set(AMGCL-C_PATCH_VERSION 0)
+set(AMGCL-C_VERSION    ${AMGCL-C_MAJOR_VERSION}.${AMGCL-C_MINOR_VERSION}.${AMGCL-C_PATCH_VERSION})
+
 
 option(AMGCL-C_BUILD_EXAMPLES OFF)
 
@@ -18,6 +29,7 @@ include(ExternalProject)
 
 # This  just downloads and unpacks amgcl to build/amgcl.
 # No compilation here as we access it as a header only library.
+# when we compile amgcl-c
 set(AMGCL_DIR "${CMAKE_CURRENT_BINARY_DIR}/amgcl")
 
 ExternalProject_Add(AMGCL
@@ -35,19 +47,64 @@ ExternalProject_Add(AMGCL
   INSTALL_COMMAND ""
   )
 
-include_directories(include)
-add_subdirectory(include)
+include_directories(${AMGCL_DIR})
+
 add_subdirectory(src)
 
-if (AMGCL_BUILD_EXAMPLES)
+if (AMGCL-C_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
 
+# From here, see https://cmake.org/cmake/help/latest/guide/importing-exporting/index.html
 install(TARGETS amgcl-c
-  LIBRARY DESTINATION lib
-  INCLUDES DESTINATION include
+  EXPORT AMGCL-CTargets
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   )
 
 install(FILES include/amgcl-c.h
-  DESTINATION include/amgcl-c
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/amgcl-c
   )
+
+
+install(EXPORT AMGCL-CTargets
+  FILE AMGCL-CTargets.cmake
+  NAMESPACE AMGCL-C::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AMGCL-C
+  )
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/AMGCL-CConfig.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AMGCL-C
+  )
+
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/AMGCL-CConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/AMGCL-CConfigVersion.cmake"
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AMGCL-C
+  )
+
+
+
+set_property(TARGET amgcl-c PROPERTY VERSION ${AMGCL-C_VERSION})
+set_property(TARGET amgcl-c PROPERTY SOVERSION ${AMGCL-C_MAJOR_VERSION})
+set_property(TARGET amgcl-c PROPERTY
+  INTERFACE_AMGCL-C_MAJOR_VERSION ${AMGCL-C_MAJOR_VERSION})
+set_property(TARGET amgcl-c APPEND PROPERTY
+  COMPATIBLE_INTERFACE_STRING AMGCL-C_MAJOR_VERSION
+)
+
+# generate the version file for the config file
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/AMGCL-CConfigVersion.cmake"
+  VERSION "${AMGCL-C_VERSION}"
+  COMPATIBILITY AnyNewerVersion
+  )
+
+export(EXPORT AMGCL-CTargets
+       FILE "${CMAKE_CURRENT_BINARY_DIR}/AMGCL-CTargets.cmake"
+       NAMESPACE AMGCL-C::
+       )
+
+     
