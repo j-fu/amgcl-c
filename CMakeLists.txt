@@ -36,5 +36,10 @@ ExternalProject_Add(AMGCL
 
 
 include_directories(include)
+add_subdirectory(include)
 add_subdirectory(src)
 add_subdirectory(examples)
+
+export(TARGETS amgcl-c FILE AMGCL-CTargets.cmake)
+set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
+export(PACKAGE AMGCL-C)
