@@ -8,7 +8,7 @@
 #include <amgcl/adapter/crs_tuple.hpp>
 
 #include <boost/property_tree/json_parser.hpp>
-
+#include <boost/property_tree/ptree.hpp>
 #include <istream>
 #include <iostream>
 #include <regex>
@@ -23,8 +23,16 @@ boost::property_tree::ptree boost_params(char *params)
 {
   boost::property_tree::ptree prm;
   std::stringstream ssparams(std::regex_replace(std::string(params), std::regex("\'"), "\""));
-  boost::property_tree::json_parser::read_json(ssparams,prm);
-
+  try
+  {
+    boost::property_tree::json_parser::read_json(ssparams,prm);
+  }
+  catch(const std::exception& e)
+  {
+    std::cerr << e.what() << std::endl;
+    std::cerr << "Error parsing json string:" <<std::endl << ssparams.str() << std::endl;
+    throw e;
+  }
   // std::ostringstream os;
   // boost::property_tree::json_parser::write_json(os,prm);
   // std::cout << os.str() << std::endl;
@@ -97,8 +105,21 @@ typedef amgcl::make_solver<
   amgcl::runtime::solver::wrapper<DBuiltinBackend>
   > DAMGSolver;
 
+static const char *amgsolverparams=R"(
+{"solver": { "type": "bicgstab",  "tol": 1.0e-10, "maxiter": 10},
+    "precond": {
+      "coarsening": { "type": "smoothed_aggregation", "relax": 1.0},
+      "relax": {"type": "spai0"}
+     }
+}
+)";
+  
+
+
 amgclcDAMGSolver amgclcDAMGSolverCreate(int n,int *ia, int *ja, double *a,char *params)
 {
+  if (params==NULL || strlen(params)==0)
+    params=(char *)amgsolverparams;
   return create<amgclcDAMGSolver,DAMGSolver>(n,ia,ja,a,params);
 }
 
@@ -123,9 +144,17 @@ typedef amgcl::make_solver<
   amgcl::runtime::solver::wrapper<DBuiltinBackend>
   >  DRLXSolver;
 
+static const char *rlxsolverparams=R"(
+     {
+    "solver": {"type": "bicgstab","tol": 1.0e-10, "maxiter": 100 },
+    "precond": {"type": "ilu0" }
+    }
+)";
 
 amgclcDRLXSolver amgclcDRLXSolverCreate(int n,int *ia, int *ja, double *a,char *params)
 {
+  if (params==NULL || strlen(params)==0)
+    params=(char *)rlxsolverparams;
   return create<amgclcDRLXSolver,DRLXSolver>(n,ia,ja,a,params);
 }
 
@@ -149,10 +178,19 @@ typedef  amgcl::amg<
     amgcl::runtime::relaxation::wrapper
   >  DAMGPrecon;
 
+static const char *amgpreconparams=R"(
+{
+   "coarsening": { "type": "smoothed_aggregation", "relax": 1.0},
+   "relax": {"type": "spai0"}
+}
+)";
+  
 
 amgclcDAMGPrecon amgclcDAMGPreconCreate(int n,int *ia, int *ja, double *a,char *params)
 {
-  return create<amgclcDAMGPrecon,DAMGPrecon>(n,ia,ja,a,params);
+ if (params==NULL || strlen(params)==0)
+    params=(char *)amgpreconparams;
+   return create<amgclcDAMGPrecon,DAMGPrecon>(n,ia,ja,a,params);
 }
 
 void amgclcDAMGPreconApply(amgclcDAMGPrecon solver, double *sol, double *rhs)
@@ -173,9 +211,16 @@ typedef  amgcl::relaxation::as_preconditioner<
   amgcl::runtime::relaxation::wrapper
   >  DRLXPrecon;
 
+static const char *rlxpreconparams=R"(
+{
+   "type": "ilu0"
+}
+)";
 
 amgclcDRLXPrecon amgclcDRLXPreconCreate(int n,int *ia, int *ja, double *a,char *params)
 {
+  if (params==NULL || strlen(params)==0)
+    params=(char *)rlxpreconparams;
   return create<amgclcDRLXPrecon,DRLXPrecon>(n,ia,ja,a,params);
 }
 
