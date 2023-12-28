@@ -34,11 +34,12 @@ void amgclcDAMGSolverDestroy(amgclcDAMGSolver solver);
 
 Default parameters:
 ```javascript
-{"solver": { "type": "bicgstab",  "tol": 1.0e-10, "maxiter": 10},
-    "precond": {
-      "coarsening": { "type": "smoothed_aggregation", "relax": 1.0},
-      "relax": {"type": "spai0"}
-     }
+{
+  "solver":  { "type": "bicgstab",  "tol": 1.0e-10, "maxiter": 10},
+  "precond": {
+       "coarsening": { "type": "smoothed_aggregation", "relax": 1.0},
+        "relax": {"type": "spai0"}
+       }
 }
 ```
 
@@ -54,6 +55,7 @@ amgclcDRLXSolver amgclcDRLXSolverCreate(int n, int *ia, int *ja, double *a, char
 amgclcInfo amgclcDRLXSolverApply(amgclcDRLXSolver solver, double *sol, double *rhs);
 void amgclcDRLXSolverDestroy(amgclcDRLXSolver solver);
 ```
+
 Default parameters:
 ```javascript
 {
@@ -71,6 +73,8 @@ amgclcDAMGPrecon amgclcDAMGPreconCreate(int n, int *ia, int *ja, double *a, char
 void amgclcDAMGPreconApply(amgclcDAMGPrecon solver, double *sol, double *rhs);
 void amgclcDAMGPreconDestroy(amgclcDAMGPrecon solver);
 ```
+
+Default parameters:
 
 ```javascript
 {
