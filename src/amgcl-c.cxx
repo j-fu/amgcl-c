@@ -145,10 +145,10 @@ typedef amgcl::make_solver<
   >  DRLXSolver;
 
 static const char *rlxsolverparams=R"(
-     {
-    "solver": {"type": "bicgstab","tol": 1.0e-10, "maxiter": 100 },
-    "precond": {"type": "ilu0" }
-    }
+{
+ "solver": {"type": "bicgstab","tol": 1.0e-10, "maxiter": 100 },
+ "precond": {"type": "ilu0" }
+}
 )";
 
 amgclcDRLXSolver amgclcDRLXSolverCreate(int n,int *ia, int *ja, double *a,char *params)
