@@ -3,8 +3,10 @@
 #include <math.h>
 #include <amgcl-c.h>
 
-
-
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+#include <assert.h>
 
 void matmul(int n, int nnz, int *ia, int *ja, double *a, double *u, double *v)
 {
@@ -104,8 +106,8 @@ int main(int argc, char** argv)
   int n0,n,nnz;
   int*ia,*ja;
   double *a,*rhs;
-  double *u,*v;
-  double myresidual;
+  double *u0, *u,*v;
+  double myresidual,myresidual0;
   amgclcInfo info;
   amgclcDAMGSolver amgsolver;
   amgclcDRLXSolver rlxsolver;
@@ -115,7 +117,7 @@ int main(int argc, char** argv)
   int i;
   printf("main:\n");
 
-  n0=10;
+  n0=50;
   if (argc>1)
   {
     n0=atoi(argv[1]);
@@ -124,30 +126,18 @@ int main(int argc, char** argv)
   sample_problem(n0, &n, &nnz, &ia, &ja, &a);
   printf("n0=%d n=%d nnz=%d\n",n0,n,nnz);
   u=(double*)calloc(n,sizeof(double));
+  u0=(double*)calloc(n,sizeof(double));
   v=(double*)calloc(n,sizeof(double));
 
+  /*
+    AMG solver
+   */
   for(i=0;i<n;i++)
   {
     u[i]=1.0;
     v[i]=1.0;
   }
-
-  char *amgparams="{\
-    'solver': {\
-      'type': 'bicgstab',\
-      'tol': 1.0e-10,\
-      'maxiter': 10},\
-    'precond': {\
-      'coarsening': {\
-        'type': 'smoothed_aggregation', 'relax': 1.0},\
-        'relax': {\
-        'type': 'spai0'}\
-    }\
-}";
-  
-
-  
-  amgsolver=amgclcDAMGSolverCreate(n,ia,ja,a,amgparams);
+  amgsolver=amgclcDAMGSolverCreate(n,ia,ja,a,NULL);
   info=amgclcDAMGSolverApply(amgsolver,u,v);
   amgclcDAMGSolverDestroy(amgsolver);
   matmul(n,nnz,ia,ja,a,u,v);
@@ -159,24 +149,23 @@ int main(int argc, char** argv)
   }
   myresidual=sqrt(myresidual);
   printf("amg: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
+  if (n0==50)
+  {
+    assert(info.residual<1.0e-10);
+    assert(myresidual<1.0e-10);
+    assert( fabs(myresidual-info.residual)<1.0e-14);
+  }
 
 
-
-
-    char *rlxparams="{\
-    'solver': {'type': 'bicgstab','tol': 1.0e-10, 'maxiter': 100 },\
-    'precond': {'type': 'ilu0' }\
-    }";
-
-
-
+  /*
+    Relaxation solver
+   */
   for(i=0;i<n;i++)
   {
     u[i]=1.0;
     v[i]=1.0;
   }
-
-  rlxsolver=amgclcDRLXSolverCreate(n,ia,ja,a,rlxparams);
+  rlxsolver=amgclcDRLXSolverCreate(n,ia,ja,a,NULL);
   info=amgclcDRLXSolverApply(rlxsolver,u,v);
   amgclcDRLXSolverDestroy(rlxsolver);
   matmul(n,nnz,ia,ja,a,u,v);
@@ -188,55 +177,97 @@ int main(int argc, char** argv)
   }
   myresidual=sqrt(myresidual);
   printf("rlx: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
-
-
-
-  for(i=0;i<n;i++)
+  if (n0==50)
   {
-    u[i]=1.0;
-    v[i]=1.0;
+    assert(info.residual<1.0e-10);
+    assert(myresidual<1.0e-10);
+    assert( fabs(myresidual-info.residual)<1.0e-14);
   }
 
-  rlxprecon=amgclcDRLXPreconCreate(n,ia,ja,a,rlxparams);
-  amgclcDRLXPreconApply(rlxprecon,u,v);
-  amgclcDRLXPreconDestroy(rlxprecon);
-  matmul(n,nnz,ia,ja,a,u,v);
-
-  myresidual=0.0;
+  /*
+    AMG preconditioning step
+   */
   for(i=0;i<n;i++)
   {
-    myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
+    u0[i]=1.0;
   }
-  myresidual=sqrt(myresidual);
-  printf("rlxprecon: myresidual=%e\n",myresidual);
 
-
+  matmul(n,nnz,ia,ja,a,u0,v);
+  myresidual0=0.0;
   for(i=0;i<n;i++)
   {
-    u[i]=1.0;
-    v[i]=1.0;
+    myresidual0+=(v[i]-1.0)*(v[i]-1.0)/n;
+    v[i]-=1.0;
   }
-
-  amgprecon=amgclcDAMGPreconCreate(n,ia,ja,a,amgparams);
+  myresidual0=sqrt(myresidual0);
+  
+  char *amgpreconparams="{'coarsening': { 'type': 'ruge_stuben'},   'relax': {'type': 'ilu0'} }";
+  
+  amgprecon=amgclcDAMGPreconCreate(n,ia,ja,a,amgpreconparams);
   amgclcDAMGPreconApply(amgprecon,u,v);
   amgclcDAMGPreconDestroy(amgprecon);
+  for(i=0;i<n;i++)
+    u[i]=u0[i]-u[i];
+  
   matmul(n,nnz,ia,ja,a,u,v);
-
   myresidual=0.0;
   for(i=0;i<n;i++)
   {
     myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
   myresidual=sqrt(myresidual);
-  printf("amgprecon: myresidual=%e\n",myresidual);
+  printf("amgprecon: myresidual/myresidual0=%e\n",myresidual/myresidual0);
 
+  if (n0==50)
+  {
+    assert(myresidual/myresidual0<0.1);
+  }
 
+  /*
+    Relaxation precondtioning step for solving 
+    Au=v with v[i]=1 and u0[i]=1
+   */
 
+  //  r= Au0-v
+  for(i=0;i<n;i++)
+  {
+    u0[i]=1.0;
+  }
+  matmul(n,nnz,ia,ja,a,u0,v);
+  myresidual0=0.0;
+  for(i=0;i<n;i++)
+  {
+    myresidual0+=(v[i]-1.0)*(v[i]-1.0)/n;
+    v[i]-=1.0;
+  }
+  myresidual0=sqrt(myresidual0);
+
+  //m u=r
+  rlxprecon=amgclcDRLXPreconCreate(n,ia,ja,a,NULL);
+  amgclcDRLXPreconApply(rlxprecon,u,v);
   
+  amgclcDRLXPreconDestroy(rlxprecon);
+  for(i=0;i<n;i++)
+    u[i]=u0[i]-u[i];
+
+  matmul(n,nnz,ia,ja,a,u,v);
+  myresidual=0.0;
+  for(i=0;i<n;i++)
+  {
+    myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
+  }
+  myresidual=sqrt(myresidual);
+  printf("rlxprecon: myresidual/myresidual0=%e\n",myresidual/myresidual0);
+  if (n0==50)
+  {
+    assert(myresidual/myresidual0<1.0);
+  }
+
   free(a);
   free(ia);
   free(ja);
   free(u);
+  free(u0);
   free(v);
   printf("ok.\n");
   

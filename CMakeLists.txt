@@ -4,12 +4,18 @@ if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, default to ${CMAKE_BUILD_TYPE}")
 endif()
 
+
 # Set  CMAKE_EXPORT_PACKAGE_REGISTRY  for exporting via user registry.
 # See https://cmake.org/cmake/help/latest/command/export.html#exporting-packages
 
 project(AMGCL-C C CXX)
 
+include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
+include(ExternalProject)
+include(CTest)
+
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -18,14 +24,10 @@ set(AMGCL-C_MINOR_VERSION 1)
 set(AMGCL-C_PATCH_VERSION 0)
 set(AMGCL-C_VERSION    ${AMGCL-C_MAJOR_VERSION}.${AMGCL-C_MINOR_VERSION}.${AMGCL-C_PATCH_VERSION})
 
-
-option(AMGCL-C_BUILD_EXAMPLES OFF)
-
 find_package(OpenMP REQUIRED)
 
 find_package(Boost COMPONENTS serialization)
 
-include(ExternalProject)
 
 # This  just downloads and unpacks amgcl to build/amgcl.
 # No compilation here as we access it as a header only library.
@@ -51,9 +53,7 @@ include_directories(${AMGCL_DIR})
 
 add_subdirectory(src)
 
-if (AMGCL-C_BUILD_EXAMPLES)
-  add_subdirectory(examples)
-endif()
+add_subdirectory(examples)
 
 # From here, see https://cmake.org/cmake/help/latest/guide/importing-exporting/index.html
 install(TARGETS amgcl-c
@@ -73,7 +73,6 @@ install(EXPORT AMGCL-CTargets
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AMGCL-C
   )
 
-include(CMakePackageConfigHelpers)
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake.in
   "${CMAKE_CURRENT_BINARY_DIR}/AMGCL-CConfig.cmake"
   INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AMGCL-C
@@ -106,5 +105,7 @@ export(EXPORT AMGCL-CTargets
        FILE "${CMAKE_CURRENT_BINARY_DIR}/AMGCL-CTargets.cmake"
        NAMESPACE AMGCL-C::
        )
+
+
 
      
