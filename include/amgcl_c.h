@@ -6,8 +6,8 @@ extern "C" {
 #endif
 
 /**
-  \file amgcl-c.h
-  \brief Yet another C-API for amgcl-c.
+  \file amgcl_c.h
+  \brief Yet another C-API for amgcl_c.
   \author Jürgen Fuhrmann <juergen.fuhrmann@wias-berlin.de>
   
   - Create parameters:

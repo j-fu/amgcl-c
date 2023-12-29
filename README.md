@@ -1,4 +1,4 @@
-amgcl-c
+AMGCL_C
 ========
 
 Alternative C API for [AMGCL](https://github.com/ddemidov/amgcl).

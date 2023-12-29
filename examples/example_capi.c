@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <amgcl-c.h>
+#include <amgcl_c.h>
 
 #ifdef NDEBUG
 #undef NDEBUG

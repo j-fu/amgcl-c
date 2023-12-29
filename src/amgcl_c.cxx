@@ -15,7 +15,7 @@
 
 extern "C"
 {
-#include "amgcl-c.h"
+#include "amgcl_c.h"
 }
 
 
