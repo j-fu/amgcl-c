@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Build type")
-    message(STATUS "No build type selected, default to ${CMAKE_BUILD_TYPE}")
+  set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Build type")
+  message(STATUS "No build type selected, default to ${CMAKE_BUILD_TYPE}")
 endif()
 
 
@@ -19,23 +19,22 @@ include(CTest)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(AMGCL_VERSION 1.4.4)
 set(AMGCL-C_MAJOR_VERSION 0)
 set(AMGCL-C_MINOR_VERSION 1)
 set(AMGCL-C_PATCH_VERSION 0)
 set(AMGCL-C_VERSION    ${AMGCL-C_MAJOR_VERSION}.${AMGCL-C_MINOR_VERSION}.${AMGCL-C_PATCH_VERSION})
 
 find_package(OpenMP REQUIRED)
+find_package(Boost COMPONENTS serialization REQUIRED)
 
-find_package(Boost COMPONENTS serialization)
 
-
-# This  just downloads and unpacks amgcl to build/amgcl.
+# This just downloads and unpacks amgcl to build/amgcl.
 # No compilation here as we access it as a header only library.
-# when we compile amgcl-c
 set(AMGCL_DIR "${CMAKE_CURRENT_BINARY_DIR}/amgcl")
 
 ExternalProject_Add(AMGCL
-  URL https://github.com/ddemidov/amgcl/archive/refs/tags/1.4.4.tar.gz
+  URL https://github.com/ddemidov/amgcl/archive/refs/tags/${AMGCL_VERSION}.tar.gz
   PREFIX "${AMGCL_DIR}" #  Root directory for the external project. 
   TMP_DIR "tmp"
   STAMP_DIR "stamps" # Directory in which to store the timestamps of each step
@@ -49,12 +48,14 @@ ExternalProject_Add(AMGCL
   INSTALL_COMMAND ""
   )
 
+# AMGCL-C code
 include_directories(${AMGCL_DIR})
-
 add_subdirectory(src)
-
 add_subdirectory(examples)
 
+#
+# Export and Install
+#
 # From here, see https://cmake.org/cmake/help/latest/guide/importing-exporting/index.html
 install(TARGETS amgcl-c
   EXPORT AMGCL-CTargets
@@ -88,11 +89,8 @@ install(FILES
 
 set_property(TARGET amgcl-c PROPERTY VERSION ${AMGCL-C_VERSION})
 set_property(TARGET amgcl-c PROPERTY SOVERSION ${AMGCL-C_MAJOR_VERSION})
-set_property(TARGET amgcl-c PROPERTY
-  INTERFACE_AMGCL-C_MAJOR_VERSION ${AMGCL-C_MAJOR_VERSION})
-set_property(TARGET amgcl-c APPEND PROPERTY
-  COMPATIBLE_INTERFACE_STRING AMGCL-C_MAJOR_VERSION
-)
+set_property(TARGET amgcl-c PROPERTY INTERFACE_AMGCL-C_MAJOR_VERSION ${AMGCL-C_MAJOR_VERSION})
+set_property(TARGET amgcl-c APPEND PROPERTY COMPATIBLE_INTERFACE_STRING AMGCL-C_MAJOR_VERSION)
 
 # generate the version file for the config file
 write_basic_package_version_file(
