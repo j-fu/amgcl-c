@@ -27,43 +27,88 @@ typedef struct {
   double residual;
 }  amgclcInfo;
 
-
+/****************************************************************************/
+/* DOUBLE/INT API */
+  
 /** 
     \brief algebraic multigrid preconditioned Krylov subspace iterative solver.
 
 */
-typedef struct{ void *handle;} amgclcDAMGSolver;
-amgclcDAMGSolver amgclcDAMGSolverCreate(int n, int *ia, int *ja, double *a, char *params);
-amgclcInfo amgclcDAMGSolverApply(amgclcDAMGSolver solver, double *sol, double *rhs);
-void amgclcDAMGSolverDestroy(amgclcDAMGSolver solver);
+typedef struct{ void *handle;} amgclcDIAMGSolver;
+amgclcDIAMGSolver amgclcDIAMGSolverCreate(int n, int *ia, int *ja, double *a, char *params);
+amgclcInfo amgclcDIAMGSolverApply(amgclcDIAMGSolver solver, double *sol, double *rhs);
+void amgclcDIAMGSolverDestroy(amgclcDIAMGSolver solver);
 
 /** 
     \brief Single level relaxation preconditioned Krylov subspace iterative solver.
 
  */
-typedef struct{ void *handle;} amgclcDRLXSolver;
-amgclcDRLXSolver amgclcDRLXSolverCreate(int n, int *ia, int *ja, double *a, char *params);
-amgclcInfo amgclcDRLXSolverApply(amgclcDRLXSolver solver, double *sol, double *rhs);
-void amgclcDRLXSolverDestroy(amgclcDRLXSolver solver);
+typedef struct{ void *handle;} amgclcDIRLXSolver;
+amgclcDIRLXSolver amgclcDIRLXSolverCreate(int n, int *ia, int *ja, double *a, char *params);
+amgclcInfo amgclcDIRLXSolverApply(amgclcDIRLXSolver solver, double *sol, double *rhs);
+void amgclcDIRLXSolverDestroy(amgclcDIRLXSolver solver);
 
 /** 
     \brief One algebraic multigrid preconditioning step.
 
  */
-typedef struct{ void *handle;} amgclcDAMGPrecon;
-amgclcDAMGPrecon amgclcDAMGPreconCreate(int n, int *ia, int *ja, double *a, char *params);
-void amgclcDAMGPreconApply(amgclcDAMGPrecon solver, double *sol, double *rhs);
-void amgclcDAMGPreconDestroy(amgclcDAMGPrecon solver);
+typedef struct{ void *handle;} amgclcDIAMGPrecon;
+amgclcDIAMGPrecon amgclcDIAMGPreconCreate(int n, int *ia, int *ja, double *a, char *params);
+void amgclcDIAMGPreconApply(amgclcDIAMGPrecon solver, double *sol, double *rhs);
+void amgclcDIAMGPreconDestroy(amgclcDIAMGPrecon solver);
 
 /** 
     \brief Ome single level relaxation  preconditioning step.
 
  */
-typedef struct{ void *handle;} amgclcDRLXPrecon;
-amgclcDRLXPrecon amgclcDRLXPreconCreate(int n, int *ia, int *ja, double *a, char *params);
-void amgclcDRLXPreconApply(amgclcDRLXPrecon solver, double *sol, double *rhs);
-void amgclcDRLXPreconDestroy(amgclcDRLXPrecon solver);
+typedef struct{ void *handle;} amgclcDIRLXPrecon;
+amgclcDIRLXPrecon amgclcDIRLXPreconCreate(int n, int *ia, int *ja, double *a, char *params);
+void amgclcDIRLXPreconApply(amgclcDIRLXPrecon solver, double *sol, double *rhs);
+void amgclcDIRLXPreconDestroy(amgclcDIRLXPrecon solver);
 
+
+
+/****************************************************************************/
+/* DOUBLE/LONG API */
+
+/** 
+    \brief algebraic multigrid preconditioned Krylov subspace iterative solver.
+
+*/
+typedef struct{ void *handle;} amgclcDLAMGSolver;
+amgclcDLAMGSolver amgclcDLAMGSolverCreate(long n, long *ia, long *ja, double *a, char *params);
+amgclcInfo amgclcDLAMGSolverApply(amgclcDLAMGSolver solver, double *sol, double *rhs);
+void amgclcDLAMGSolverDestroy(amgclcDLAMGSolver solver);
+
+/** 
+    \brief Single level relaxation preconditioned Krylov subspace iterative solver.
+
+ */
+typedef struct{ void *handle;} amgclcDLRLXSolver;
+amgclcDLRLXSolver amgclcDLRLXSolverCreate(long n, long *ia, long *ja, double *a, char *params);
+amgclcInfo amgclcDLRLXSolverApply(amgclcDLRLXSolver solver, double *sol, double *rhs);
+void amgclcDLRLXSolverDestroy(amgclcDLRLXSolver solver);
+
+/** 
+    \brief One algebraic multigrid preconditioning step.
+
+ */
+typedef struct{ void *handle;} amgclcDLAMGPrecon;
+amgclcDLAMGPrecon amgclcDLAMGPreconCreate(long n, long *ia, long *ja, double *a, char *params);
+void amgclcDLAMGPreconApply(amgclcDLAMGPrecon solver, double *sol, double *rhs);
+void amgclcDLAMGPreconDestroy(amgclcDLAMGPrecon solver);
+
+/** 
+    \brief Ome single level relaxation  preconditioning step.
+
+ */
+typedef struct{ void *handle;} amgclcDLRLXPrecon;
+amgclcDLRLXPrecon amgclcDLRLXPreconCreate(long n, long *ia, long *ja, double *a, char *params);
+void amgclcDLRLXPreconApply(amgclcDLRLXPrecon solver, double *sol, double *rhs);
+void amgclcDLRLXPreconDestroy(amgclcDLRLXPrecon solver);
+
+
+  
 #ifdef __cplusplus
 } // extern "C"
 #endif
