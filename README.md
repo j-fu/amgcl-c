@@ -24,6 +24,8 @@ typedef struct {
 ```
 
 The only backend supported in the moment is AMGCL's default OpenMP parallel backend.
+Please note that on Apple systems, OpenMP probably will not work (unless CMake
+finds OpenMP).
 
 ### Algebraic multigrid (AMG) preconditioned Krylov subspace iterative solver.
 
