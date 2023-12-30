@@ -12,7 +12,7 @@
 #include <istream>
 #include <iostream>
 #include <regex>
-
+#include <cstdio>
 extern "C"
 {
 #include "amgcl_c.h"
@@ -41,7 +41,7 @@ boost::property_tree::ptree boost_params(char *params)
 
 auto make_matrix_tuple(int n,int *ia, int *ja, double *a)
 {
-  int nnz=ia[n+1];
+  int nnz=ia[n];
   auto ptr=amgcl::make_iterator_range(ia, ia + n+1);
   auto col=amgcl::make_iterator_range(ja, ja + nnz);
   auto val=amgcl::make_iterator_range(a, a + n);
@@ -56,6 +56,7 @@ template <typename S, typename T> void destroy(S solver)
 template <typename S, typename T> S create(int n,int *ia, int *ja, double *a, char *params)
 {
   S solver;
+                
   solver.handle=static_cast<void*>(new T(make_matrix_tuple(n,ia,ja,a), boost_params(params) ));
   return solver;
 }
@@ -118,8 +119,17 @@ static const char *amgsolverparams=R"(
 
 amgclcDAMGSolver amgclcDAMGSolverCreate(int n,int *ia, int *ja, double *a,char *params)
 {
-  if (params==NULL || strlen(params)==0)
-    params=(char *)amgsolverparams;
+ int nnz=ia[n];
+
+ for(int i=0;i<n+1;i++)
+   printf(" %d %d\n",i,ia[i]);
+ for(int i=0;i<nnz;i++)
+   printf(" %d %d\n",i,ja[i]);
+ for(int i=0;i<nnz;i++)
+   printf(" %d %e\n",i,a[i]);
+  
+ if (params==NULL || strlen(params)==0)
+   params=(char *)amgsolverparams;
   return create<amgclcDAMGSolver,DAMGSolver>(n,ia,ja,a,params);
 }
 
