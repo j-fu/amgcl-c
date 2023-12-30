@@ -109,10 +109,10 @@ int main(int argc, char** argv)
   double *u0, *u,*v;
   double myresidual,myresidual0;
   amgclcInfo info;
-  amgclcDAMGSolver amgsolver;
-  amgclcDRLXSolver rlxsolver;
-  amgclcDRLXPrecon rlxprecon;
-  amgclcDAMGPrecon amgprecon;
+  amgclcDIAMGSolver amgsolver;
+  amgclcDIRLXSolver rlxsolver;
+  amgclcDIRLXPrecon rlxprecon;
+  amgclcDIAMGPrecon amgprecon;
   
   int i;
   printf("main:\n");
@@ -137,9 +137,9 @@ int main(int argc, char** argv)
     u[i]=1.0;
     v[i]=1.0;
   }
-  amgsolver=amgclcDAMGSolverCreate(n,ia,ja,a,NULL);
-  info=amgclcDAMGSolverApply(amgsolver,u,v);
-  amgclcDAMGSolverDestroy(amgsolver);
+  amgsolver=amgclcDIAMGSolverCreate(n,ia,ja,a,NULL);
+  info=amgclcDIAMGSolverApply(amgsolver,u,v);
+  amgclcDIAMGSolverDestroy(amgsolver);
   matmul(n,nnz,ia,ja,a,u,v);
 
   myresidual=0.0;
@@ -165,9 +165,9 @@ int main(int argc, char** argv)
     u[i]=1.0;
     v[i]=1.0;
   }
-  rlxsolver=amgclcDRLXSolverCreate(n,ia,ja,a,NULL);
-  info=amgclcDRLXSolverApply(rlxsolver,u,v);
-  amgclcDRLXSolverDestroy(rlxsolver);
+  rlxsolver=amgclcDIRLXSolverCreate(n,ia,ja,a,NULL);
+  info=amgclcDIRLXSolverApply(rlxsolver,u,v);
+  amgclcDIRLXSolverDestroy(rlxsolver);
   matmul(n,nnz,ia,ja,a,u,v);
 
   myresidual=0.0;
@@ -203,9 +203,9 @@ int main(int argc, char** argv)
   
   char *amgpreconparams="{'coarsening': { 'type': 'ruge_stuben'},   'relax': {'type': 'ilu0'} }";
   
-  amgprecon=amgclcDAMGPreconCreate(n,ia,ja,a,amgpreconparams);
-  amgclcDAMGPreconApply(amgprecon,u,v);
-  amgclcDAMGPreconDestroy(amgprecon);
+  amgprecon=amgclcDIAMGPreconCreate(n,ia,ja,a,amgpreconparams);
+  amgclcDIAMGPreconApply(amgprecon,u,v);
+  amgclcDIAMGPreconDestroy(amgprecon);
   for(i=0;i<n;i++)
     u[i]=u0[i]-u[i];
   
@@ -243,10 +243,10 @@ int main(int argc, char** argv)
   myresidual0=sqrt(myresidual0);
 
   //m u=r
-  rlxprecon=amgclcDRLXPreconCreate(n,ia,ja,a,NULL);
-  amgclcDRLXPreconApply(rlxprecon,u,v);
+  rlxprecon=amgclcDIRLXPreconCreate(n,ia,ja,a,NULL);
+  amgclcDIRLXPreconApply(rlxprecon,u,v);
   
-  amgclcDRLXPreconDestroy(rlxprecon);
+  amgclcDIRLXPreconDestroy(rlxprecon);
   for(i=0;i<n;i++)
     u[i]=u0[i]-u[i];
 

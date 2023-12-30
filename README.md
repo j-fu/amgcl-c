@@ -7,6 +7,9 @@ The aim is the ability to access single level relaxation preconditioned Krylov m
 It is also planned to build a Julia wrapper to AMGCL based on this code.
 
 ## API Description
+Currently, AMGCL_C provides two interfaces:
+- for `double` numbers and `int` indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDI` as shown in the example below
+- for `double` numbers and `long int` indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDL`, just replace `int` with `long` in the examples below
 
 ### General parameters:
   - `...Create` parameters:
@@ -30,10 +33,10 @@ finds OpenMP).
 ### Algebraic multigrid (AMG) preconditioned Krylov subspace iterative solver.
 
 ```c
-typedef struct{ void *handle;} amgclcDAMGSolver;
-amgclcDAMGSolver amgclcDAMGSolverCreate(int n, int *ia, int *ja, double *a, char *params);
-amgclcInfo amgclcDAMGSolverApply(amgclcDAMGSolver solver, double *sol, double *rhs);
-void amgclcDAMGSolverDestroy(amgclcDAMGSolver solver);
+typedef struct{ void *handle;} amgclcDIAMGSolver;
+amgclcDIAMGSolver amgclcDIAMGSolverCreate(int n, int *ia, int *ja, double *a, char *params);
+amgclcInfo amgclcDIAMGSolverApply(amgclcDIAMGSolver solver, double *sol, double *rhs);
+void amgclcDIAMGSolverDestroy(amgclcDIAMGSolver solver);
 ```
 
 Default parameters:
@@ -51,10 +54,10 @@ Default parameters:
 ### Single level relaxation preconditioned Krylov subspace iterative solver.
 
 ```c
-typedef struct{ void *handle;} amgclcDRLXSolver;
-amgclcDRLXSolver amgclcDRLXSolverCreate(int n, int *ia, int *ja, double *a, char *params);
-amgclcInfo amgclcDRLXSolverApply(amgclcDRLXSolver solver, double *sol, double *rhs);
-void amgclcDRLXSolverDestroy(amgclcDRLXSolver solver);
+typedef struct{ void *handle;} amgclcDIRLXSolver;
+amgclcDIRLXSolver amgclcDIRLXSolverCreate(int n, int *ia, int *ja, double *a, char *params);
+amgclcInfo amgclcDIRLXSolverApply(amgclcDIRLXSolver solver, double *sol, double *rhs);
+void amgclcDIRLXSolverDestroy(amgclcDIRLXSolver solver);
 ```
 
 Default parameters:
@@ -69,10 +72,10 @@ Default parameters:
 ### One AMG preconditioning step
 
 ```c
-typedef struct{ void *handle;} amgclcDAMGPrecon;
-amgclcDAMGPrecon amgclcDAMGPreconCreate(int n, int *ia, int *ja, double *a, char *params);
-void amgclcDAMGPreconApply(amgclcDAMGPrecon solver, double *sol, double *rhs);
-void amgclcDAMGPreconDestroy(amgclcDAMGPrecon solver);
+typedef struct{ void *handle;} amgclcDIAMGPrecon;
+amgclcDIAMGPrecon amgclcDIAMGPreconCreate(int n, int *ia, int *ja, double *a, char *params);
+void amgclcDIAMGPreconApply(amgclcDIAMGPrecon solver, double *sol, double *rhs);
+void amgclcDIAMGPreconDestroy(amgclcDIAMGPrecon solver);
 ```
 
 Default parameters:
@@ -87,10 +90,10 @@ Default parameters:
 ### One single level relaxation  preconditioning step.
 
 ```c
-typedef struct{ void *handle;} amgclcDRLXPrecon;
-amgclcDRLXPrecon amgclcDRLXPreconCreate(int n, int *ia, int *ja, double *a, char *params);
-void amgclcDRLXPreconApply(amgclcDRLXPrecon solver, double *sol, double *rhs);
-void amgclcDRLXPreconDestroy(amgclcDRLXPrecon solver);
+typedef struct{ void *handle;} amgclcDIRLXPrecon;
+amgclcDIRLXPrecon amgclcDIRLXPreconCreate(int n, int *ia, int *ja, double *a, char *params);
+void amgclcDIRLXPreconApply(amgclcDIRLXPrecon solver, double *sol, double *rhs);
+void amgclcDIRLXPreconDestroy(amgclcDIRLXPrecon solver);
 ```
 
 Default parameters:
