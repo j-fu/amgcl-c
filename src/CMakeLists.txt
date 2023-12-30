@@ -1,5 +1,7 @@
-add_compile_options(${OpenMP_CXX_FLAGS})
-add_link_options(${OpenMP_CXX_FLAGS})
+if (OpenMP_FOUND)
+  add_compile_options(${OpenMP_CXX_FLAGS})
+  add_link_options(${OpenMP_CXX_FLAGS})
+endif()
 
 add_library(amgcl_c SHARED amgcl_c.cxx)
 target_include_directories(amgcl_c

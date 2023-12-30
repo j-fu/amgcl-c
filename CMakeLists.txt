@@ -25,9 +25,18 @@ set(AMGCL_C_MINOR_VERSION 1)
 set(AMGCL_C_PATCH_VERSION 0)
 set(AMGCL_C_VERSION    ${AMGCL_C_MAJOR_VERSION}.${AMGCL_C_MINOR_VERSION}.${AMGCL_C_PATCH_VERSION})
 
-find_package(OpenMP REQUIRED)
+
 find_package(Boost COMPONENTS serialization REQUIRED)
 
+# I would very much like to REQUIRE this, but on apple
+# there are problems I wasn't able to solve yet
+# Any help appreciated
+find_package(OpenMP)
+if (OpenMP_FOUND)
+  message(STATUS "Found OpenMP")
+else()
+  message(STATUS "Sorry, no OpenMP support")
+endif()
 
 # This just downloads and unpacks amgcl to build/amgcl.
 # No compilation here as we access it as a header only library.
