@@ -84,7 +84,7 @@ using AMGSolver=amgcl::make_solver<
   amgcl::runtime::solver::wrapper< amgcl::backend::builtin<Tv>>
   >;
 
-const char *amgsolverparams();
+extern const char *amgsolverparams;
 
 
 //
@@ -99,7 +99,7 @@ using RLXSolver=amgcl::make_solver<
   amgcl::runtime::solver::wrapper<amgcl::backend::builtin<Tv>>
   > ;
 
-const char *rlxsolverparams();
+extern const char *rlxsolverparams;
 
 //
 // AMG preconditioner
@@ -111,7 +111,7 @@ using AMGPrecon = amgcl::amg<
     amgcl::runtime::relaxation::wrapper
   >;
 
-const char *amgpreconparams();
+extern const char *amgpreconparams;
 
 //
 // Relaxation preconditioner
@@ -122,4 +122,4 @@ using RLXPrecon=amgcl::relaxation::as_preconditioner<
   amgcl::runtime::relaxation::wrapper
   >;
 
-const char *rlxpreconparams();
+extern const char *rlxpreconparams;

@@ -5,7 +5,7 @@ amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,char *p
  Ti nnz=ia[n];
   
  if (params==NULL || strlen(params)==0)
-   params=(char *)amgsolverparams();
+   params=(char *)amgsolverparams;
  
  return create<amgclcTvTiAMGSolver,AMGSolver<Tv>,Tv,Ti >(n,ia,ja,a,params);
 }
@@ -23,7 +23,7 @@ void amgclcTvTiAMGSolverDestroy(amgclcTvTiAMGSolver solver)
 amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,char *params)
 {
   if (params==NULL || strlen(params)==0)
-    params=(char *)rlxsolverparams();
+    params=(char *)rlxsolverparams;
   return create<amgclcTvTiRLXSolver,RLXSolver<Tv>,Tv,Ti>(n,ia,ja,a,params);
 }
 
@@ -40,7 +40,7 @@ void amgclcTvTiRLXSolverDestroy(amgclcTvTiRLXSolver solver)
 amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,char *params)
 {
  if (params==NULL || strlen(params)==0)
-   params=(char *)amgpreconparams();
+   params=(char *)amgpreconparams;
  return create<amgclcTvTiAMGPrecon,AMGPrecon<Tv>,Tv,Ti>(n,ia,ja,a,params);
 }
 
@@ -57,7 +57,7 @@ void amgclcTvTiAMGPreconDestroy(amgclcTvTiAMGPrecon solver)
 amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,char *params)
 {
   if (params==NULL || strlen(params)==0)
-    params=(char *)rlxpreconparams();
+    params=(char *)rlxpreconparams;
   return create<amgclcTvTiRLXPrecon,RLXPrecon<Tv>,Tv,Ti>(n,ia,ja,a,params);
 }
 
