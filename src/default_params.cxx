@@ -20,9 +20,7 @@ boost::property_tree::ptree boost_params(char *params)
   return prm;
 }
 
-const char *amgsolverparams()
-{
-  return R"(
+const char *amgsolverparams= R"(
 {"solver": { "type": "bicgstab",  "tol": 1.0e-10, "maxiter": 10},
     "precond": {
       "coarsening": { "type": "smoothed_aggregation", "relax": 1.0},
@@ -30,31 +28,26 @@ const char *amgsolverparams()
      }
 }
 )";
-};
 
-const char *rlxsolverparams()
-{
-  return R"(
+
+const char *rlxsolverparams= R"(
 {
  "solver": {"type": "bicgstab","tol": 1.0e-10, "maxiter": 100 },
  "precond": {"type": "ilu0" }
 }
 )";
-}
-const char *amgpreconparams()
-{return R"(
+
+const char *amgpreconparams=R"(
 {
    "coarsening": { "type": "smoothed_aggregation", "relax": 1.0},
    "relax": {"type": "spai0"}
 }
 )";
-}  
 
-const char *rlxpreconparams()
-{return R"(
+const char *rlxpreconparams=R"(
 {
    "type": "ilu0"
 }
 )";
-}
+
 
