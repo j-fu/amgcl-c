@@ -21,7 +21,7 @@ boost::property_tree::ptree boost_params(char *params)
 }
 
 const char *amgsolverparams= R"(
-{"solver": { "type": "bicgstab",  "tol": 1.0e-10, "maxiter": 10},
+{"solver": { "type": "bicgstab",  "tol": 1.0e-10, "maxiter": 50},
     "precond": {
       "coarsening": { "type": "smoothed_aggregation", "relax": 1.0},
       "relax": {"type": "spai0"}
