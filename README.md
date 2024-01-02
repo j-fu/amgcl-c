@@ -11,6 +11,8 @@ Currently, AMGCL_C provides two interfaces:
 - for `double` numbers and `int` indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDI` as shown in the example below
 - for `double` numbers and `long int` indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDL`, just replace `int` with `long` in the examples below
 
+See also the discussion of the block variants below.  
+  
 ### General parameters:
   - `...Create` parameters:
      -  `n,ia,ja,a`: Zero-based indexing CRS sparse matrix data
@@ -49,6 +51,13 @@ Default parameters:
        }
 }
 ```
+
+Block variant:
+```
+amgclcDIBlockAMGSolver  amgclcDIAMGBlockSolverCreate(int n, int *ia, int *ja, double *a, int blocksize, char *params)
+```
+Block variants are available also for all other solver variants below. By default, block sizes 2 ... 10 are instantiated and accessible via the C API. All methods below have these block variants.
+
 
 
 ### Single level relaxation preconditioned Krylov subspace iterative solver.

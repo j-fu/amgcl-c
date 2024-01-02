@@ -108,6 +108,89 @@ void amgclcDLRLXPreconApply(amgclcDLRLXPrecon solver, double *sol, double *rhs);
 void amgclcDLRLXPreconDestroy(amgclcDLRLXPrecon solver);
 
 
+/*****************************************************************************/
+/*****************************************************************************/
+/*****************************************************************************/
+/*****************************************************************************/
+/* Block stuff */
+/** 
+    \brief algebraic multigrid preconditioned Krylov subspace iterative solver.
+
+*/
+  typedef struct{ void *handle; int blocksize;} amgclcDIBlockAMGSolver;
+amgclcDIBlockAMGSolver amgclcDIBlockAMGSolverCreate(int n, int *ia, int *ja, double *a, int blocksize, char *params);
+amgclcInfo amgclcDIBlockAMGSolverApply(amgclcDIBlockAMGSolver solver, double *sol, double *rhs);
+void amgclcDIBlockAMGSolverDestroy(amgclcDIBlockAMGSolver solver);
+
+/** 
+    \brief Single level relaxation preconditioned Krylov subspace iterative solver.
+
+ */
+typedef struct{ void *handle; int blocksize;} amgclcDIBlockRLXSolver;
+amgclcDIBlockRLXSolver amgclcDIBlockRLXSolverCreate(int n, int *ia, int *ja, double *a, int blocksize, char *params);
+amgclcInfo amgclcDIBlockRLXSolverApply(amgclcDIBlockRLXSolver solver, double *sol, double *rhs);
+void amgclcDIBlockRLXSolverDestroy(amgclcDIBlockRLXSolver solver);
+
+/** 
+    \brief One algebraic multigrid preconditioning step.
+
+ */
+typedef struct{ void *handle; int blocksize;} amgclcDIBlockAMGPrecon;
+amgclcDIBlockAMGPrecon amgclcDIBlockAMGPreconCreate(int n, int *ia, int *ja, double *a, int blocksize, char *params);
+void amgclcDIBlockAMGPreconApply(amgclcDIBlockAMGPrecon solver, double *sol, double *rhs);
+void amgclcDIBlockAMGPreconDestroy(amgclcDIBlockAMGPrecon solver);
+
+/** 
+    \brief Ome single level relaxation  preconditioning step.
+
+ */
+typedef struct{ void *handle; int blocksize;} amgclcDIBlockRLXPrecon;
+amgclcDIBlockRLXPrecon amgclcDIBlockRLXPreconCreate(int n, int *ia, int *ja, double *a, int blocksize, char *params);
+void amgclcDIBlockRLXPreconApply(amgclcDIBlockRLXPrecon solver, double *sol, double *rhs);
+void amgclcDIBlockRLXPreconDestroy(amgclcDIBlockRLXPrecon solver);
+
+
+
+/****************************************************************************/
+/* DOUBLE/LONG API */
+
+/** 
+    \brief algebraic multigrid preconditioned Krylov subspace iterative solver.
+
+*/
+  typedef struct{ void *handle; int blocksize;} amgclcDLBlockAMGSolver;
+amgclcDLBlockAMGSolver amgclcDLBlockAMGSolverCreate(long n, long *ia, long *ja, double *a, int blocksize, char *params);
+amgclcInfo amgclcDLBlockAMGSolverApply(amgclcDLBlockAMGSolver solver, double *sol, double *rhs);
+void amgclcDLBlockAMGSolverDestroy(amgclcDLBlockAMGSolver solver);
+
+/** 
+    \brief Single level relaxation preconditioned Krylov subspace iterative solver.
+
+ */
+typedef struct{ void *handle; int blocksize;} amgclcDLBlockRLXSolver;
+amgclcDLBlockRLXSolver amgclcDLBlockRLXSolverCreate(long n, long *ia, long *ja, double *a, int blocksize, char *params);
+amgclcInfo amgclcDLBlockRLXSolverApply(amgclcDLBlockRLXSolver solver, double *sol, double *rhs);
+void amgclcDLBlockRLXSolverDestroy(amgclcDLBlockRLXSolver solver);
+
+/** 
+    \brief One algebraic multigrid preconditioning step.
+
+ */
+typedef struct{ void *handle; int blocksize;} amgclcDLBlockAMGPrecon;
+amgclcDLBlockAMGPrecon amgclcDLBlockAMGPreconCreate(long n, long *ia, long *ja, double *a, int blocksize, char *params);
+void amgclcDLBlockAMGPreconApply(amgclcDLBlockAMGPrecon solver, double *sol, double *rhs);
+void amgclcDLBlockAMGPreconDestroy(amgclcDLBlockAMGPrecon solver);
+
+/** 
+    \brief Ome single level relaxation  preconditioning step.
+
+ */
+typedef struct{ void *handle; int blocksize;} amgclcDLBlockRLXPrecon;
+amgclcDLBlockRLXPrecon amgclcDLBlockRLXPreconCreate(long n, long *ia, long *ja, double *a, int blocksize, char *params);
+void amgclcDLBlockRLXPreconApply(amgclcDLBlockRLXPrecon solver, double *sol, double *rhs);
+void amgclcDLBlockRLXPreconDestroy(amgclcDLBlockRLXPrecon solver);
+
+
   
 #ifdef __cplusplus
 } // extern "C"
