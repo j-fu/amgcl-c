@@ -15,7 +15,11 @@ include(GNUInstallDirs)
 include(ExternalProject)
 include(CTest)
 
-
+#
+# Block sizes to be generated.
+#
+set(BLOCKSIZES "BLOCKSIZE(2) BLOCKSIZE(3) BLOCKSIZE(4) BLOCKSIZE(5) BLOCKSIZE(6) BLOCKSIZE(7) BLOCKSIZE(8) BLOCKSIZE(9) BLOCKSIZE(10)" CACHE STRING "Default block sizes to be compiled")
+message(STATUS "${BLOCKSIZES}")
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
