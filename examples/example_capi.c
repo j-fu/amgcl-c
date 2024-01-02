@@ -9,7 +9,7 @@
 #endif
 #include <assert.h>
 
-#define myassert(expr) printf("TEST: %40s:",#expr), assert(expr), printf(" ok\n");
+#define TEST(expr) printf("TEST: %40s:",#expr), assert(expr), printf(" ok\n");
 
 /* My own sparse matrix-vector multiplication for cross-checking amgcl claims */
 void matmul(int n, int nnz, int *ia, int *ja, double *a, double *u, double *v)
@@ -146,12 +146,13 @@ void run(int n0)
     myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
   myresidual=sqrt(myresidual);
+
   printf("\namg solver: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
   if (n0==60)
   {
-    myassert(info.residual<1.0e-10);
-    myassert(myresidual<1.0e-10);
-    myassert( fabs(myresidual-info.residual)<1.0e-14);
+    TEST(info.residual<1.0e-10);
+    TEST(myresidual<1.0e-10);
+    TEST( fabs(myresidual-info.residual)<1.0e-14);
   }
 
 
@@ -177,9 +178,9 @@ void run(int n0)
   printf("\nrlx solver: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
   if (n0==60)
   {
-    myassert(info.residual<1.0e-10);
-    myassert(myresidual<1.0e-10);
-    myassert( fabs(myresidual-info.residual)<1.0e-14);
+    TEST(info.residual<1.0e-10);
+    TEST(myresidual<1.0e-10);
+    TEST( fabs(myresidual-info.residual)<1.0e-14);
   }
 
   /*
@@ -218,7 +219,7 @@ void run(int n0)
 
   if (n0==60)
   {
-    myassert(myresidual/myresidual0<0.1);
+    TEST(myresidual/myresidual0<0.1);
   }
 
   /*
@@ -258,7 +259,7 @@ void run(int n0)
   printf("\nrlx precon: myresidual/myresidual0=%e\n",myresidual/myresidual0);
   if (n0==60)
   {
-    myassert(myresidual/myresidual0<1.0);
+    TEST(myresidual/myresidual0<1.0);
   }
 
   free(a);
@@ -312,9 +313,9 @@ int blockrun(int n0, int blocksize)
   printf("\namg solver: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
   if (n0==60)
   {
-    myassert(info.residual<1.0e-10);
-    myassert(myresidual<1.0e-10);
-    myassert( fabs(myresidual-info.residual)<1.0e-14);
+    TEST(info.residual<1.0e-10);
+    TEST(myresidual<1.0e-10);
+    TEST( fabs(myresidual-info.residual)<1.0e-14);
   }
 
 
@@ -340,9 +341,9 @@ int blockrun(int n0, int blocksize)
   printf("\nrlx solver: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
   if (n0==60)
   {
-    myassert(info.residual<1.0e-10);
-    myassert(myresidual<1.0e-10);
-    myassert( fabs(myresidual-info.residual)<1.0e-14);
+    TEST(info.residual<1.0e-10);
+    TEST(myresidual<1.0e-10);
+    TEST( fabs(myresidual-info.residual)<1.0e-14);
   }
 
   /*
@@ -381,7 +382,7 @@ int blockrun(int n0, int blocksize)
 
   if (n0==60)
   {
-    myassert(myresidual/myresidual0<0.5);
+    TEST(myresidual/myresidual0<0.5);
   }
 
   /*
@@ -421,7 +422,7 @@ int blockrun(int n0, int blocksize)
   printf("\nrlx precon: myresidual/myresidual0=%e\n",myresidual/myresidual0);
   if (n0==60)
   {
-    myassert(myresidual/myresidual0<1.0);
+    TEST(myresidual/myresidual0<1.0);
   }
 
   free(a);
@@ -453,3 +454,4 @@ int main(int argc, char** argv)
   n0%10==0 && blockrun(n0,10);
 
 }
+

@@ -9,5 +9,3 @@ string(REPLACE "Tv" "${TV}" string3  "${string2}")
 string(REPLACE "Ti" "${TI}" string4  "${string3}")
 string(REPLACE "BLOCKSIZES" "${myblocksizes}" string5  "${string4}")
 file(WRITE ${outputfile} "${string5}")
-
-
