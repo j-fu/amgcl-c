@@ -19,8 +19,8 @@ include(CTest)
 # Block sizes to be generated.
 #
 set(BLOCKSIZES "BLOCKSIZE(2) BLOCKSIZE(3) BLOCKSIZE(4) BLOCKSIZE(5) BLOCKSIZE(6) BLOCKSIZE(7) BLOCKSIZE(8)" CACHE STRING "Default block sizes to be compiled")
-set(BUILD_DI_INTERFACE True CACHE Bool "Build double-int interface")
-set(BUILD_DL_INTERFACE True CACHE Bool "Build double-long interface")
+set(BUILD_DI_INTERFACE True CACHE BOOL "Build double-int interface")
+set(BUILD_DL_INTERFACE True CACHE BOOL "Build double-long interface")
 
 
 set(CMAKE_CXX_STANDARD 14)
