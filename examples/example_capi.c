@@ -450,8 +450,6 @@ int main(int argc, char** argv)
   n0%6==0 && blockrun(n0,6);
   n0%7==0 && blockrun(n0,7);
   n0%8==0 && blockrun(n0,8);
-  n0%9==0 && blockrun(n0,9);
-  n0%10==0 && blockrun(n0,10);
 
 }
 

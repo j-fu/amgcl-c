@@ -18,8 +18,11 @@ include(CTest)
 #
 # Block sizes to be generated.
 #
-set(BLOCKSIZES "BLOCKSIZE(2) BLOCKSIZE(3) BLOCKSIZE(4) BLOCKSIZE(5) BLOCKSIZE(6) BLOCKSIZE(7) BLOCKSIZE(8) BLOCKSIZE(9) BLOCKSIZE(10)" CACHE STRING "Default block sizes to be compiled")
-message(STATUS "${BLOCKSIZES}")
+set(BLOCKSIZES "BLOCKSIZE(2) BLOCKSIZE(3) BLOCKSIZE(4) BLOCKSIZE(5) BLOCKSIZE(6) BLOCKSIZE(7) BLOCKSIZE(8)" CACHE STRING "Default block sizes to be compiled")
+set(BUILD_DI_INTERFACE True CACHE Bool "Build double-int interface")
+set(BUILD_DL_INTERFACE True CACHE Bool "Build double-long interface")
+
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -61,11 +64,27 @@ ExternalProject_Add(AMGCL
   INSTALL_COMMAND ""
   )
 
+if (BUILD_DI_INTERFACE)
+  set(HEADERS ${HEADERS} amgcl_c_di.h)
+  set(SOURCES ${SOURCES} amgcl_di.cxx block_amgcl_di.cxx)
+endif()
+
+if (BUILD_DL_INTERFACE)
+  set(HEADERS ${HEADERS} amgcl_c_dl.h)
+  set(SOURCES ${SOURCES} amgcl_dl.cxx block_amgcl_dl.cxx)
+endif()
+
+message(STATUS "BLOCKSIZES: ${BLOCKSIZES}")
+message(STATUS "HEADERS: ${HEADERS}")
+message(STATUS "SOURCES: ${SOURCES}")
 
 # AMGCL_C code
 include_directories(${AMGCL_DIR})
+add_subdirectory(include)
 add_subdirectory(src)
-add_subdirectory(examples)
+if (BUILD_DI_INTERFACE)
+  add_subdirectory(examples)
+endif()
 
 #
 # Export and Install
@@ -77,7 +96,7 @@ install(TARGETS amgcl_c
   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   )
 
-install(FILES include/amgcl_c.h
+install(FILES ${CMAKE_BINARY_DIR}/include/amgcl_c.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/amgcl_c
   )
 

@@ -16,11 +16,9 @@
 #include <regex>
 #include <complex.h>
 
-extern "C"
-{
+extern "C" {
 #include "amgcl_c.h"
 }
-
 
 boost::property_tree::ptree boost_params(char *params);
 
@@ -56,7 +54,6 @@ template<typename S, typename T, typename Tv, typename Ti, int N> S block_create
   return solver;
 }
 
-
 template <typename S, typename T, typename Tv> amgclcInfo solve(S _solver, Tv *sol, Tv *rhs)
 {
   amgclcInfo info;
@@ -70,6 +67,7 @@ template <typename S, typename T, typename Tv> amgclcInfo solve(S _solver, Tv *s
   
   return info;
 }
+
 
 template <typename S, typename T, typename Tv, int N> amgclcInfo block_solve(S _solver, Tv *sol, Tv *rhs)
 {
@@ -86,7 +84,6 @@ template <typename S, typename T, typename Tv, int N> amgclcInfo block_solve(S _
   
   return info;
 }
-
 
 template <typename S, typename T,typename Tv> void apply(S _solver, Tv *sol, Tv *rhs)
 {

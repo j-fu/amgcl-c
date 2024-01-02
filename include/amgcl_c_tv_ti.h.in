@@ -1,0 +1,99 @@
+#ifndef AMGCL_C_TvTi_H
+#define AMGCL_C_TvTi_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef AMGCLC_INFO
+#define AMGCLC_INFO  
+
+/** 
+    \brief Info structure
+*/
+typedef struct {
+  int iters;
+  double residual;
+}  amgclcInfo;
+#endif
+  
+/** 
+    \brief algebraic multigrid preconditioned Krylov subspace iterative solver.
+*/
+typedef struct{ void *handle;} amgclcTvTiAMGSolver;
+amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(int n, Ti *ia, Ti *ja, Tv *a, char *params);
+amgclcInfo amgclcTvTiAMGSolverApply(amgclcTvTiAMGSolver solver, Tv *sol, Tv *rhs);
+void amgclcTvTiAMGSolverDestroy(amgclcTvTiAMGSolver solver);
+
+/** 
+    \brief Single level relaxation preconditioned Krylov subspace iterative solver.
+
+ */
+typedef struct{ void *handle;} amgclcTvTiRLXSolver;
+amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(int n, Ti *ia, Ti *ja, Tv *a, char *params);
+amgclcInfo amgclcTvTiRLXSolverApply(amgclcTvTiRLXSolver solver, Tv *sol, Tv *rhs);
+void amgclcTvTiRLXSolverDestroy(amgclcTvTiRLXSolver solver);
+
+/** 
+    \brief One algebraic multigrid preconditioning step.
+
+ */
+typedef struct{ void *handle;} amgclcTvTiAMGPrecon;
+amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(int n, Ti *ia, Ti *ja, Tv *a, char *params);
+void amgclcTvTiAMGPreconApply(amgclcTvTiAMGPrecon solver, Tv *sol, Tv *rhs);
+void amgclcTvTiAMGPreconDestroy(amgclcTvTiAMGPrecon solver);
+
+/** 
+    \brief Ome single level relaxation  preconditioning step.
+
+ */
+typedef struct{ void *handle;} amgclcTvTiRLXPrecon;
+amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(int n, Ti *ia, Ti *ja, Tv *a, char *params);
+void amgclcTvTiRLXPreconApply(amgclcTvTiRLXPrecon solver, Tv *sol, Tv *rhs);
+void amgclcTvTiRLXPreconDestroy(amgclcTvTiRLXPrecon solver);
+
+
+
+
+/*****************************************************************************/
+/* Block stuff */
+/** 
+    \brief algebraic multigrid preconditioned Krylov subspace iterative solver.
+
+*/
+  typedef struct{ void *handle; int blocksize;} amgclcTvTiBlockAMGSolver;
+amgclcTvTiBlockAMGSolver amgclcTvTiBlockAMGSolverCreate(int n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+amgclcInfo amgclcTvTiBlockAMGSolverApply(amgclcTvTiBlockAMGSolver solver, Tv *sol, Tv *rhs);
+void amgclcTvTiBlockAMGSolverDestroy(amgclcTvTiBlockAMGSolver solver);
+
+/** 
+    \brief Single level relaxation preconditioned Krylov subspace iterative solver.
+*/
+typedef struct{ void *handle; int blocksize;} amgclcTvTiBlockRLXSolver;
+amgclcTvTiBlockRLXSolver amgclcTvTiBlockRLXSolverCreate(int n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+amgclcInfo amgclcTvTiBlockRLXSolverApply(amgclcTvTiBlockRLXSolver solver, Tv *sol, Tv *rhs);
+void amgclcTvTiBlockRLXSolverDestroy(amgclcTvTiBlockRLXSolver solver);
+
+/** 
+    \brief One algebraic multigrid preconditioning step.
+*/
+typedef struct{ void *handle; int blocksize;} amgclcTvTiBlockAMGPrecon;
+amgclcTvTiBlockAMGPrecon amgclcTvTiBlockAMGPreconCreate(int n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+void amgclcTvTiBlockAMGPreconApply(amgclcTvTiBlockAMGPrecon solver, Tv *sol, Tv *rhs);
+void amgclcTvTiBlockAMGPreconDestroy(amgclcTvTiBlockAMGPrecon solver);
+
+/** 
+    \brief One single level relaxation  preconditioning step.
+*/
+typedef struct{ void *handle; int blocksize;} amgclcTvTiBlockRLXPrecon;
+amgclcTvTiBlockRLXPrecon amgclcTvTiBlockRLXPreconCreate(int n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+void amgclcTvTiBlockRLXPreconApply(amgclcTvTiBlockRLXPrecon solver, Tv *sol, Tv *rhs);
+void amgclcTvTiBlockRLXPreconDestroy(amgclcTvTiBlockRLXPrecon solver);
+
+
+  
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+#endif
