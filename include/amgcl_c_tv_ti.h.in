@@ -16,7 +16,12 @@ typedef struct {
   double residual;
 }  amgclcInfo;
 #endif
-  
+
+/** 
+   \brief Query if particular blocksize has been instatiated.
+*/
+int amgclcBlocksizeTvTiInstantiated(int blocksize);
+
 /** 
     \brief algebraic multigrid preconditioned Krylov subspace iterative solver.
 */

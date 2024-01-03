@@ -136,7 +136,3 @@ export(EXPORT AMGCL_CTargets
        FILE "${CMAKE_CURRENT_BINARY_DIR}/AMGCL_CTargets.cmake"
        NAMESPACE AMGCL_C::
        )
-
-
-
-     

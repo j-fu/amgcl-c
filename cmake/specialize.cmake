@@ -1,7 +1,6 @@
-message(STATUS "specialize")
-string(REPLACE "\\" "" myblocksizes  "${BLOCKSIZES}")
+message(STATUS "specialize ${inputfile} --> ${outputfile}")
 
-message(STATUS ${inputfile})
+string(REPLACE "\\" "" myblocksizes  "${BLOCKSIZES}")
 
 file(READ ${inputfile} string1)
 string(REPLACE "TvTi" "${TVTI}" string2  "${string1}")
