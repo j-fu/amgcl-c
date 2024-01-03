@@ -35,10 +35,7 @@ set(AMGCL_C_VERSION    ${AMGCL_C_MAJOR_VERSION}.${AMGCL_C_MINOR_VERSION}.${AMGCL
 
 find_package(Boost COMPONENTS serialization REQUIRED)
 
-# I would very much like to REQUIRE this, but on apple
-# there are problems I wasn't able to solve yet
-# Any help appreciated
-find_package(OpenMP)
+find_package(OpenMP REQUIRED)
 if (OpenMP_FOUND)
   message(STATUS "Found OpenMP")
 else()
