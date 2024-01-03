@@ -1,8 +1,8 @@
 #include "common.hxx"
 
-amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,char *params)
+amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(int n,Ti *ia, Ti *ja, Tv *a,char *params)
 {
- Ti nnz=ia[n];
+ int nnz=ia[n];
   
  if (params==NULL || strlen(params)==0)
    params=(char *)amgsolverparams;
@@ -20,7 +20,7 @@ void amgclcTvTiAMGSolverDestroy(amgclcTvTiAMGSolver solver)
   destroy<amgclcTvTiAMGSolver,AMGSolver<Tv>>(solver);
 }
 
-amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,char *params)
+amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(int n,Ti *ia, Ti *ja, Tv *a,char *params)
 {
   if (params==NULL || strlen(params)==0)
     params=(char *)rlxsolverparams;
@@ -37,7 +37,7 @@ void amgclcTvTiRLXSolverDestroy(amgclcTvTiRLXSolver solver)
   destroy<amgclcTvTiRLXSolver,RLXSolver<Tv>>(solver);
 }
 
-amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,char *params)
+amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(int n,Ti *ia, Ti *ja, Tv *a,char *params)
 {
  if (params==NULL || strlen(params)==0)
    params=(char *)amgpreconparams;
@@ -54,7 +54,7 @@ void amgclcTvTiAMGPreconDestroy(amgclcTvTiAMGPrecon solver)
   destroy<amgclcTvTiAMGPrecon,AMGPrecon<Tv>>(solver);
 }
 
-amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,char *params)
+amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(int n,Ti *ia, Ti *ja, Tv *a,char *params)
 {
   if (params==NULL || strlen(params)==0)
     params=(char *)rlxpreconparams;

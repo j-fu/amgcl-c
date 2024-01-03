@@ -16,9 +16,7 @@
 #include <regex>
 #include <complex.h>
 
-extern "C" {
 #include "amgcl_c.h"
-}
 
 boost::property_tree::ptree boost_params(char *params);
 

@@ -11,9 +11,9 @@ int amgclcTvTiBlocksizeInstantiated(int blocksize)
   }   
 }
 
-amgclcTvTiBlockAMGSolver amgclcTvTiBlockAMGSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+amgclcTvTiBlockAMGSolver amgclcTvTiBlockAMGSolverCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
- Ti nnz=ia[n];
+ int nnz=ia[n];
  amgclcTvTiBlockAMGSolver S0;
  S0.handle=0;
  S0.blocksize=0;
@@ -56,7 +56,7 @@ void amgclcTvTiBlockAMGSolverDestroy(amgclcTvTiBlockAMGSolver solver)
  }
 }
 
-amgclcTvTiBlockRLXSolver amgclcTvTiBlockRLXSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+amgclcTvTiBlockRLXSolver amgclcTvTiBlockRLXSolverCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
   amgclcTvTiBlockRLXSolver S0;
   S0.handle=0;
@@ -100,7 +100,7 @@ void amgclcTvTiBlockRLXSolverDestroy(amgclcTvTiBlockRLXSolver solver)
  }
 }
 
-amgclcTvTiBlockAMGPrecon amgclcTvTiBlockAMGPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+amgclcTvTiBlockAMGPrecon amgclcTvTiBlockAMGPreconCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
  amgclcTvTiBlockAMGPrecon S0;
  S0.handle=0;
@@ -140,7 +140,7 @@ void amgclcTvTiBlockAMGPreconDestroy(amgclcTvTiBlockAMGPrecon solver)
   }
 }
 
-amgclcTvTiBlockRLXPrecon amgclcTvTiBlockRLXPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+amgclcTvTiBlockRLXPrecon amgclcTvTiBlockRLXPreconCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
   amgclcTvTiBlockRLXPrecon S0;
   S0.handle=0;

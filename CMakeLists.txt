@@ -61,14 +61,14 @@ ExternalProject_Add(AMGCL
   INSTALL_COMMAND ""
   )
 
-if (BUILD_DI_INTERFACE)
-  set(HEADERS ${HEADERS} amgcl_c_di.h)
-  set(SOURCES ${SOURCES} amgcl_di.cxx block_amgcl_di.cxx)
-endif()
-
 if (BUILD_DL_INTERFACE)
   set(HEADERS ${HEADERS} amgcl_c_dl.h)
   set(SOURCES ${SOURCES} amgcl_dl.cxx block_amgcl_dl.cxx)
+endif()
+
+if (BUILD_DI_INTERFACE)
+  set(HEADERS ${HEADERS} amgcl_c_di.h)
+  set(SOURCES ${SOURCES} amgcl_di.cxx block_amgcl_di.cxx)
 endif()
 
 message(STATUS "BLOCKSIZES: ${BLOCKSIZES}")
