@@ -1,72 +1,194 @@
 #include "common.hxx"
 
-amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(int n,Ti *ia, Ti *ja, Tv *a,char *params)
+int amgclcTvTiBlocksizeInstantiated(int blocksize)
+{
+  switch (blocksize)
+  {
+#define BLOCKSIZE(N) case N: return 1;
+    BLOCKSIZES
+#undef BLOCKSIZE
+  default: return 0;
+  }   
+}
+
+amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
  int nnz=ia[n];
-  
+ amgclcTvTiAMGSolver S0;
+ S0.handle=0;
+ S0.blocksize=0;
+ 
  if (params==NULL || strlen(params)==0)
    params=(char *)amgsolverparams;
- 
- return create<amgclcTvTiAMGSolver,AMGSolver<Tv>,Tv,Ti >(n,ia,ja,a,params);
+
+ switch (blocksize)
+ {
+ case 1:  return create<amgclcTvTiAMGSolver,AMGSolver<Tv>,Tv,Ti >(n,ia,ja,a,params);
+#define BLOCKSIZE(N) case N: return block_create<amgclcTvTiAMGSolver,BlockAMGSolver<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default: throw std::runtime_error("Blocksize "+std::to_string(blocksize)+" not implemented"); return S0;
+ }   
 }
 
 amgclcInfo amgclcTvTiAMGSolverApply(amgclcTvTiAMGSolver solver, Tv *sol, Tv *rhs)
 {
-  return solve<amgclcTvTiAMGSolver,AMGSolver<Tv>,Tv>(solver,sol,rhs);
+  amgclcInfo I0;
+  I0.iters=0;
+  I0.residual=0;
+  
+  switch (solver.blocksize)
+  {
+  case 1:   return solve<amgclcTvTiAMGSolver,AMGSolver<Tv>,Tv>(solver,sol,rhs);
+#define BLOCKSIZE(N)  case N:   return block_solve<amgclcTvTiAMGSolver,BlockAMGSolver<Tv,N>,Tv,N>(solver,sol,rhs); 
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default: throw std::runtime_error("Blocksize "+std::to_string(solver.blocksize)+" not implemented"); return I0;
+  }
 }
 
 void amgclcTvTiAMGSolverDestroy(amgclcTvTiAMGSolver solver)
 {
-  destroy<amgclcTvTiAMGSolver,AMGSolver<Tv>>(solver);
+ switch (solver.blocksize)
+ {
+ case 1: destroy<amgclcTvTiAMGSolver,AMGSolver<Tv>>(solver); break;
+#define BLOCKSIZE(N) case N: destroy<amgclcTvTiAMGSolver,BlockAMGSolver<Tv,N>>(solver); break;
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default: throw std::runtime_error("Blocksize "+std::to_string(solver.blocksize)+" not implemented");
+ }
 }
 
-amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(int n,Ti *ia, Ti *ja, Tv *a,char *params)
+amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
+  amgclcTvTiRLXSolver S0;
+  S0.handle=0;
+  S0.blocksize=0;
+
   if (params==NULL || strlen(params)==0)
     params=(char *)rlxsolverparams;
-  return create<amgclcTvTiRLXSolver,RLXSolver<Tv>,Tv,Ti>(n,ia,ja,a,params);
+ switch (blocksize)
+ {
+ case 1:  return create<amgclcTvTiRLXSolver,RLXSolver<Tv>,Tv,Ti>(n,ia,ja,a,params);
+#define BLOCKSIZE(N)  case N: return block_create<amgclcTvTiRLXSolver,BlockRLXSolver<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default: throw std::runtime_error("Blocksize "+std::to_string(blocksize)+" not implemented"); return S0;
+ }   
 }
 
 amgclcInfo amgclcTvTiRLXSolverApply(amgclcTvTiRLXSolver solver, Tv *sol, Tv *rhs)
 {
-  return solve<amgclcTvTiRLXSolver,RLXSolver<Tv>, Tv>(solver,sol,rhs);
+  amgclcInfo I0;
+  I0.iters=0;
+  I0.residual=0;
+  
+
+  switch (solver.blocksize)
+  {
+  case 1:  return solve<amgclcTvTiRLXSolver,RLXSolver<Tv>, Tv>(solver,sol,rhs);
+#define BLOCKSIZE(N)   case N:   return block_solve<amgclcTvTiRLXSolver,BlockRLXSolver<Tv,N>,Tv,N>(solver,sol,rhs); 
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default: throw std::runtime_error("Blocksize "+std::to_string(solver.blocksize)+" not implemented"); return I0;
+  }
 }
 
 void amgclcTvTiRLXSolverDestroy(amgclcTvTiRLXSolver solver)
 {
-  destroy<amgclcTvTiRLXSolver,RLXSolver<Tv>>(solver);
+ switch (solver.blocksize)
+ {
+ case 1: destroy<amgclcTvTiRLXSolver,RLXSolver<Tv>>(solver); break;
+
+#define BLOCKSIZE(N)  case N: destroy<amgclcTvTiRLXSolver,BlockRLXSolver<Tv,N>>(solver); break;
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default: throw std::runtime_error("Blocksize "+std::to_string(solver.blocksize)+" not implemented");
+ }
 }
 
-amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(int n,Ti *ia, Ti *ja, Tv *a,char *params)
+amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
+ amgclcTvTiAMGPrecon S0;
+ S0.handle=0;
+ S0.blocksize=0;
+
+  
  if (params==NULL || strlen(params)==0)
    params=(char *)amgpreconparams;
- return create<amgclcTvTiAMGPrecon,AMGPrecon<Tv>,Tv,Ti>(n,ia,ja,a,params);
+ switch (blocksize)
+ {
+ case 1: return create<amgclcTvTiAMGPrecon,AMGPrecon<Tv>,Tv,Ti>(n,ia,ja,a,params);
+#define BLOCKSIZE(N)  case N: return block_create<amgclcTvTiAMGPrecon,BlockAMGPrecon<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default: throw std::runtime_error("Blocksize "+std::to_string(blocksize)+" not implemented"); return S0;
+ }   
 }
 
 void amgclcTvTiAMGPreconApply(amgclcTvTiAMGPrecon solver, Tv *sol, Tv *rhs)
 {
-  apply<amgclcTvTiAMGPrecon,AMGPrecon<Tv>, Tv>(solver,sol,rhs);
+  switch (solver.blocksize)
+  {
+  case 1: apply<amgclcTvTiAMGPrecon,AMGPrecon<Tv>, Tv>(solver,sol,rhs); break;
+#define BLOCKSIZE(N)   case N:  block_apply<amgclcTvTiAMGPrecon,BlockAMGPrecon<Tv,N>,Tv,N>(solver,sol,rhs); break;
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default: throw std::runtime_error("Blocksize "+std::to_string(solver.blocksize)+" not implemented"); break;
+  }
 }
 
 void amgclcTvTiAMGPreconDestroy(amgclcTvTiAMGPrecon solver)
 {
-  destroy<amgclcTvTiAMGPrecon,AMGPrecon<Tv>>(solver);
+  switch (solver.blocksize)
+  {
+  case 1: destroy<amgclcTvTiAMGPrecon,AMGPrecon<Tv>>(solver); break;
+#define BLOCKSIZE(N)   case N: destroy<amgclcTvTiAMGPrecon,BlockAMGPrecon<Tv,N>>(solver); break;
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default: throw std::runtime_error("Blocksize "+std::to_string(solver.blocksize)+" not implemented");
+  }
 }
 
-amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(int n,Ti *ia, Ti *ja, Tv *a,char *params)
+amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
+  amgclcTvTiRLXPrecon S0;
+  S0.handle=0;
+  S0.blocksize=0;
+  
   if (params==NULL || strlen(params)==0)
     params=(char *)rlxpreconparams;
-  return create<amgclcTvTiRLXPrecon,RLXPrecon<Tv>,Tv,Ti>(n,ia,ja,a,params);
+  switch (blocksize)
+  {
+  case 1:   return create<amgclcTvTiRLXPrecon,RLXPrecon<Tv>,Tv,Ti>(n,ia,ja,a,params);
+#define BLOCKSIZE(N)   case N: return block_create<amgclcTvTiRLXPrecon,BlockRLXPrecon<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default: throw std::runtime_error("Blocksize "+std::to_string(blocksize)+" not implemented"); return S0;
+  }   
+
 }
 
 void amgclcTvTiRLXPreconApply(amgclcTvTiRLXPrecon solver, Tv *sol, Tv *rhs)
 {
-  apply<amgclcTvTiRLXPrecon,RLXPrecon<Tv>,Tv>(solver,sol,rhs);
+  switch (solver.blocksize)
+  {
+  case 1: apply<amgclcTvTiRLXPrecon,RLXPrecon<Tv>,Tv>(solver,sol,rhs); break;
+#define BLOCKSIZE(N)   case N:  block_apply<amgclcTvTiRLXPrecon,BlockRLXPrecon<Tv,N>,Tv,N>(solver,sol,rhs); break;
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default: throw std::runtime_error("Blocksize "+std::to_string(solver.blocksize)+" not implemented"); 
+  }
 }
 
 void amgclcTvTiRLXPreconDestroy(amgclcTvTiRLXPrecon solver)
 {
-  destroy<amgclcTvTiRLXPrecon,RLXPrecon<Tv>>(solver);
+ switch (solver.blocksize)
+ {
+ case 1:  destroy<amgclcTvTiRLXPrecon,RLXPrecon<Tv>>(solver); break;
+#define BLOCKSIZE(N)  case N: destroy<amgclcTvTiRLXPrecon,BlockRLXPrecon<Tv,N>>(solver); break;
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default: throw std::runtime_error("Blocksize "+std::to_string(solver.blocksize)+" not implemented");
+ }
 }
