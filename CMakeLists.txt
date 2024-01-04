@@ -17,6 +17,7 @@ include(CTest)
 
 #
 # Block sizes to be generated.
+# Don't list BLOCKSIZE(1) here, this is available by default.
 #
 set(BLOCKSIZES "BLOCKSIZE(2) BLOCKSIZE(3) BLOCKSIZE(4) BLOCKSIZE(5) BLOCKSIZE(6) BLOCKSIZE(7) BLOCKSIZE(8)" CACHE STRING "Default block sizes to be compiled")
 set(BUILD_DI_INTERFACE True CACHE BOOL "Build double-int interface")
@@ -36,11 +37,6 @@ set(AMGCL_C_VERSION    ${AMGCL_C_MAJOR_VERSION}.${AMGCL_C_MINOR_VERSION}.${AMGCL
 find_package(Boost COMPONENTS serialization REQUIRED)
 
 find_package(OpenMP REQUIRED)
-if (OpenMP_FOUND)
-  message(STATUS "Found OpenMP")
-else()
-  message(STATUS "Sorry, no OpenMP support")
-endif()
 
 # This just downloads and unpacks amgcl to build/amgcl.
 # No compilation here as we access it as a header only library.
@@ -63,12 +59,12 @@ ExternalProject_Add(AMGCL
 
 if (BUILD_DL_INTERFACE)
   set(HEADERS ${HEADERS} amgcl_c_dl.h)
-  set(SOURCES ${SOURCES} amgcl_dl.cxx block_amgcl_dl.cxx)
+  set(SOURCES ${SOURCES} amgcl_dl.cxx)
 endif()
 
 if (BUILD_DI_INTERFACE)
   set(HEADERS ${HEADERS} amgcl_c_di.h)
-  set(SOURCES ${SOURCES} amgcl_di.cxx block_amgcl_di.cxx)
+  set(SOURCES ${SOURCES} amgcl_di.cxx)
 endif()
 
 message(STATUS "BLOCKSIZES: ${BLOCKSIZES}")

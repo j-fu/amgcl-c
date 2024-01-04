@@ -39,6 +39,7 @@ template<typename S, typename T, typename Tv, typename Ti> S create(Ti n,Ti *ia,
 {
   S solver;
   solver.handle=static_cast<void*>(new T(make_matrix_tuple(n,ia,ja,a), boost_params(params) ));
+  solver.blocksize = 1;
   return solver;
 }
 
