@@ -24,7 +24,7 @@ void matmul(int n, int nnz, int *ia, int *ja, double *a, double *u, double *v)
 }
 
 /* 3D poisson assembly, inspired from https://github.com/ddemidov/amgcl_benchmarks/blob/master/shared_mem/poisson/amgcl.cpp*/
-int sample_problem(int n, int *_n3, int *_nnz, int **_ia, int **_ja, double **_a)
+void sample_problem(int n, int *_n3, int *_nnz, int **_ia, int **_ja, double **_a)
 {
   int *ia, *ja;
   double *a;
