@@ -38,7 +38,9 @@ template <typename S, typename T> void destroy(S solver)
 template<typename S, typename T, typename Tv, typename Ti> S create(Ti n,Ti *ia, Ti *ja, Tv *a, char *params)
 {
   S solver;
+  std::cout << sizeof(solver) << std::endl;
   solver.handle=static_cast<void*>(new T(make_matrix_tuple(n,ia,ja,a), boost_params(params) ));
+  std::cout <<  solver.handle << std::endl;
   solver.blocksize = 1;
   return solver;
 }
