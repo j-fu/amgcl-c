@@ -5,6 +5,7 @@ xxxSolver xxxCreate(int n)
   xxxSolver S;
   S.blocksize=n;
   S.handle=0;
+  return S;
 }
 
 boost::property_tree::ptree boost_params(char *params)
