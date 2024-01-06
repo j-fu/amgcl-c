@@ -1,5 +1,12 @@
 #include <common.hxx>
 
+xxxSolver xxxCreate(int n)
+{
+  xxxSolver S;
+  S.blocksize=n;
+  S.handle=0;
+}
+
 boost::property_tree::ptree boost_params(char *params)
 {
   boost::property_tree::ptree prm;

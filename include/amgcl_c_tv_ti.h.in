@@ -15,6 +15,12 @@ extern "C" {
     int iters;
     double residual;
   }  amgclcInfo;
+
+  typedef struct
+  { void *handle; int blocksize;}
+    xxxSolver;
+
+  xxxSolver xxxCreate(int n);
 #endif
   
 /** 

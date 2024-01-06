@@ -290,3 +290,10 @@ int fulltest(int n0)
   return 1;
 }
 
+
+int xxxtest()
+{
+  xxxSolver xs;
+  xs=xxxCreate(3);
+  assert(xs.blocksize==3);
+}
