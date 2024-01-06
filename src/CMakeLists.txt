@@ -29,7 +29,7 @@ add_custom_command(
     )
 
 
-add_library(amgcl_c SHARED ${SOURCES} default_params.cxx)
+add_library(amgcl_c SHARED ${SOURCES} default_params.cxx test.c)
 add_dependencies(amgcl_c AMGCL amgcl_c_h)
 target_include_directories(amgcl_c
   PUBLIC
