@@ -14,6 +14,7 @@ include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include(ExternalProject)
 include(CTest)
+include(CheckTypeSize)
 
 #
 # Block sizes to be generated.
@@ -29,7 +30,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(AMGCL_VERSION 1.4.4)
 set(AMGCL_C_MAJOR_VERSION 0)
-set(AMGCL_C_MINOR_VERSION 1)
+set(AMGCL_C_MINOR_VERSION 2)
 set(AMGCL_C_PATCH_VERSION 0)
 set(AMGCL_C_VERSION    ${AMGCL_C_MAJOR_VERSION}.${AMGCL_C_MINOR_VERSION}.${AMGCL_C_PATCH_VERSION})
 
@@ -37,6 +38,30 @@ set(AMGCL_C_VERSION    ${AMGCL_C_MAJOR_VERSION}.${AMGCL_C_MINOR_VERSION}.${AMGCL
 find_package(Boost COMPONENTS serialization REQUIRED)
 
 find_package(OpenMP REQUIRED)
+
+# Thx https://stackoverflow.com/a/48460091
+check_type_size("int" SIZEOF_INT)
+if(SIZEOF_INT EQUAL "4")
+  message(STATUS "sizeof(int)=4")
+else()
+  message(FATAL_ERROR "Can't find 4-bit int")
+endif()
+
+check_type_size("int64_t" SIZEOF_INT64_T)
+check_type_size("long long" SIZEOF_LONG_LONG)
+check_type_size("long" SIZEOF_LONG)
+
+if(SIZEOF_INT64_T EQUAL "8")
+  set(INT64_T "int64_t")
+elseif(SIZEOF_LONG EQUAL "8")
+  set(INT64_T "long")
+elseif(SIZEOF_LONG_LONG EQUAL "8")
+  set(INT64_T "long long")
+else()
+  message(FATAL_ERROR "Can't find suitable int64_t")
+endif()
+message(STATUS "Found int64_t: ${INT64_T}")
+
 
 # This just downloads and unpacks amgcl to build/amgcl.
 # No compilation here as we access it as a header only library.

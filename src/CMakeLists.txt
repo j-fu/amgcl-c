@@ -23,7 +23,7 @@ add_custom_command(
                              -D outputfile=${CMAKE_CURRENT_BINARY_DIR}/amgcl_dl.cxx
                              -D TVTI="DL"
                              -D TV="double"
-                             -D TI="long"
+                             -D TI="${INT64_T}"
                              -P ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/specialize.cmake
     DEPENDS amgcl_tv_ti.cxx.in
     )
