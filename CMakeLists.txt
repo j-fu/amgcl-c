@@ -22,8 +22,8 @@ include(CheckTypeSize)
 # Don't list BLOCKSIZE(1) here, this is available by default.
 #
 set(BLOCKSIZES "BLOCKSIZE(2) BLOCKSIZE(3) BLOCKSIZE(4) BLOCKSIZE(5) BLOCKSIZE(6) BLOCKSIZE(7) BLOCKSIZE(8)" CACHE STRING "Default block sizes to be compiled")
-set(BUILD_DI_INTERFACE True CACHE BOOL "Build double-int interface")
-set(BUILD_DL_INTERFACE True CACHE BOOL "Build double-long interface")
+set(BUILD_DI_INTERFACE True CACHE BOOL "Build double - 32bit int (int) interface")
+set(BUILD_DL_INTERFACE True CACHE BOOL "Build double - 64bit int (long) interface")
 
 
 set(CMAKE_CXX_STANDARD 14)
@@ -42,28 +42,35 @@ find_package(OpenMP REQUIRED)
 
 # Thx https://stackoverflow.com/a/48460091
 check_include_file(stdint.h HAVE_STDINT_H)
-check_type_size("int" SIZEOF_INT)
-if(SIZEOF_INT EQUAL "4")
-  message(STATUS "sizeof(int)=4")
-else()
-  message(FATAL_ERROR "Can't find 4-bit int")
+
+
+if (BUILD_DI_INTERFACE)
+  
+  check_type_size("int" SIZEOF_INT)
+  if(SIZEOF_INT EQUAL "4")
+    message(STATUS "sizeof(int)=4")
+  else()
+    message(FATAL_ERROR "Int is not 4 bytes long")
+  endif()
 endif()
 
-check_type_size("int64_t" SIZEOF_INT64_T)
-check_type_size("long long" SIZEOF_LONG_LONG)
-check_type_size("long" SIZEOF_LONG)
 
-if(SIZEOF_INT64_T EQUAL "8")
-  set(INT64_T "int64_t")
-elseif(SIZEOF_LONG EQUAL "8")
-  set(INT64_T "long")
-elseif(SIZEOF_LONG_LONG EQUAL "8")
-  set(INT64_T "long long")
-else()
-  message(FATAL_ERROR "Can't find suitable int64_t")
+if (BUILD_DL_INTERFACE)
+  check_type_size("int64_t" SIZEOF_INT64_T)
+  check_type_size("long long" SIZEOF_LONG_LONG)
+  check_type_size("long" SIZEOF_LONG)
+  
+  if(SIZEOF_INT64_T EQUAL "8")
+    set(INT64_T "int64_t")
+  elseif(SIZEOF_LONG EQUAL "8")
+    set(INT64_T "long")
+  elseif(SIZEOF_LONG_LONG EQUAL "8")
+    set(INT64_T "long long")
+  else()
+    message(FATAL_ERROR "Can't find suitable int64_t")
+  endif()
+  message(STATUS "Found int64_t: ${INT64_T}")
 endif()
-message(STATUS "Found int64_t: ${INT64_T}")
-
 
 # This just downloads and unpacks amgcl to build/amgcl.
 # No compilation here as we access it as a header only library.

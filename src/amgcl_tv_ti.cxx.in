@@ -11,9 +11,8 @@ int amgclcTvTiBlocksizeInstantiated(int blocksize)
   }   
 }
 
-amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
- int nnz=ia[n];
  amgclcTvTiAMGSolver S0;
  S0.handle=0;
  S0.blocksize=0;
@@ -59,7 +58,7 @@ void amgclcTvTiAMGSolverDestroy(amgclcTvTiAMGSolver solver)
  }
 }
 
-amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
   amgclcTvTiRLXSolver S0;
   S0.handle=0;
@@ -107,7 +106,7 @@ void amgclcTvTiRLXSolverDestroy(amgclcTvTiRLXSolver solver)
  }
 }
 
-amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
  amgclcTvTiAMGPrecon S0;
  S0.handle=0;
@@ -150,7 +149,7 @@ void amgclcTvTiAMGPreconDestroy(amgclcTvTiAMGPrecon solver)
   }
 }
 
-amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(int n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {
   amgclcTvTiRLXPrecon S0;
   S0.handle=0;

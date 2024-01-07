@@ -9,8 +9,8 @@ It is also planned to build a Julia wrapper to AMGCL based on this code.
 ## API Description
 Currently, AMGCL_C provides two interfaces:
 - for `double` numbers and 4 byte int indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDI` as shown in the example below
-- for `double` numbers and 8 byte int indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDL`
- just replace `int` with the coresponding 8 byte integer type (`long` or `long long` or `int64_t`).
+- for `double` numbers and 8 byte int indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDL`.
+  In the examples below just replace `DI` with `DL` and `int*` with a corresponding 8 byte pointer to integer type (`long*`,  `long long*` or `int64_t*`).
   
 ### General parameters:
   - `...Create` parameters:
@@ -21,6 +21,7 @@ Currently, AMGCL_C provides two interfaces:
   - `...Apply` parameters:
      - `sol, rhs`: zero-offset vectors. Length is determined from the created solver/preconditioner
   -  Data structure returned by iterative methods:
+
 ```c
 typedef struct {
   int iters;

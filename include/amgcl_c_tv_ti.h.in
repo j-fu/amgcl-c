@@ -29,7 +29,7 @@ extern "C" {
     
 */
   typedef struct{ void *handle; int blocksize;} amgclcTvTiAMGSolver;
-  amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(int n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+  amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(Ti n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
   amgclcInfo amgclcTvTiAMGSolverApply(amgclcTvTiAMGSolver solver, Tv *sol, Tv *rhs);
   void amgclcTvTiAMGSolverDestroy(amgclcTvTiAMGSolver solver);
   
@@ -37,7 +37,7 @@ extern "C" {
     \brief Single level relaxation preconditioned Krylov subspace iterative solver.
 */
   typedef struct{ void *handle; int blocksize;} amgclcTvTiRLXSolver;
-  amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(int n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+  amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(Ti n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
   amgclcInfo amgclcTvTiRLXSolverApply(amgclcTvTiRLXSolver solver, Tv *sol, Tv *rhs);
   void amgclcTvTiRLXSolverDestroy(amgclcTvTiRLXSolver solver);
   
@@ -45,7 +45,7 @@ extern "C" {
     \brief One algebraic multigrid preconditioning step.
 */
   typedef struct{ void *handle; int blocksize;} amgclcTvTiAMGPrecon;
-  amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(int n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+  amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(Ti n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
   void amgclcTvTiAMGPreconApply(amgclcTvTiAMGPrecon solver, Tv *sol, Tv *rhs);
   void amgclcTvTiAMGPreconDestroy(amgclcTvTiAMGPrecon solver);
   
@@ -53,7 +53,7 @@ extern "C" {
     \brief One single level relaxation  preconditioning step.
 */
   typedef struct{ void *handle; int blocksize;} amgclcTvTiRLXPrecon;
-  amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(int n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+  amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(Ti n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
   void amgclcTvTiRLXPreconApply(amgclcTvTiRLXPrecon solver, Tv *sol, Tv *rhs);
   void amgclcTvTiRLXPreconDestroy(amgclcTvTiRLXPrecon solver);
   
