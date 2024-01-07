@@ -14,6 +14,7 @@ include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include(ExternalProject)
 include(CTest)
+include(CheckIncludeFile)
 include(CheckTypeSize)
 
 #
@@ -40,6 +41,7 @@ find_package(Boost COMPONENTS serialization REQUIRED)
 find_package(OpenMP REQUIRED)
 
 # Thx https://stackoverflow.com/a/48460091
+check_include_file(stdint.h HAVE_STDINT_H)
 check_type_size("int" SIZEOF_INT)
 if(SIZEOF_INT EQUAL "4")
   message(STATUS "sizeof(int)=4")

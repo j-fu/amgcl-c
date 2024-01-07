@@ -1,6 +1,13 @@
 #ifndef AMGCL_C_TvTi_H
 #define AMGCL_C_TvTi_H
 
+#ifndef STDINT_INCLUDED
+#define STDINT_INCLUDED
+
+#include <stdint.h>
+
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

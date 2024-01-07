@@ -13,8 +13,8 @@ add_custom_command(
                              -D TV="double"
                              -D TI="int"
                              -P ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/specialize.cmake
-    DEPENDS amgcl_tv_ti.cxx.in
-)
+                             DEPENDS amgcl_tv_ti.cxx.in
+                             )
 
 add_custom_command(
     OUTPUT  amgcl_dl.cxx
@@ -25,8 +25,8 @@ add_custom_command(
                              -D TV="double"
                              -D TI="${INT64_T}"
                              -P ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/specialize.cmake
-    DEPENDS amgcl_tv_ti.cxx.in
-    )
+                             DEPENDS amgcl_tv_ti.cxx.in
+                             )
 
 
 add_library(amgcl_c SHARED ${SOURCES} default_params.cxx)

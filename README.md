@@ -8,8 +8,9 @@ It is also planned to build a Julia wrapper to AMGCL based on this code.
 
 ## API Description
 Currently, AMGCL_C provides two interfaces:
-- for `double` numbers and `int` indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDI` as shown in the example below
-- for `double` numbers and `long int` indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDL`, just replace `int` with `long` in the examples below
+- for `double` numbers and 4 byte int indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDI` as shown in the example below
+- for `double` numbers and 8 byte int indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDL`
+ just replace `int` with the coresponding 8 byte integer type (`long` or `long long` or `int64_t`).
   
 ### General parameters:
   - `...Create` parameters:
