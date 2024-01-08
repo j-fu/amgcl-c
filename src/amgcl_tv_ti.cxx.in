@@ -25,7 +25,7 @@ amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blo
 #define BLOCKSIZE(N) case N: return block_create<amgclcTvTiAMGSolver,BlockAMGSolver<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
    BLOCKSIZES
 #undef BLOCKSIZE
- default: return set_error(S0,"Blocksize "+std::to_string(blocksize)+" not implemented");
+ default: return set_error(S0,-blocksize);
  }   
 }
 
@@ -40,7 +40,7 @@ amgclcInfo amgclcTvTiAMGSolverApply(amgclcTvTiAMGSolver solver, Tv *sol, Tv *rhs
 #define BLOCKSIZE(N)  case N:   return block_solve<amgclcTvTiAMGSolver,BlockAMGSolver<Tv,N>,Tv,N>(solver,sol,rhs); 
    BLOCKSIZES
 #undef BLOCKSIZE
-  default: return set_error(I0,"Blocksize "+std::to_string(solver.blocksize)+" not implemented");
+  default: return set_error(I0,-solver.blocksize);
   }
 }
 
@@ -69,7 +69,7 @@ amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blo
 #define BLOCKSIZE(N)  case N: return block_create<amgclcTvTiRLXSolver,BlockRLXSolver<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
    BLOCKSIZES
 #undef BLOCKSIZE
- default: return set_error(S0,"Blocksize "+std::to_string(blocksize)+" not implemented");
+ default: return set_error(S0,-blocksize);
  }   
 }
 
@@ -85,7 +85,7 @@ amgclcInfo amgclcTvTiRLXSolverApply(amgclcTvTiRLXSolver solver, Tv *sol, Tv *rhs
 #define BLOCKSIZE(N)   case N:   return block_solve<amgclcTvTiRLXSolver,BlockRLXSolver<Tv,N>,Tv,N>(solver,sol,rhs); 
    BLOCKSIZES
 #undef BLOCKSIZE
-  default: return set_error(I0,"Blocksize "+std::to_string(solver.blocksize)+" not implemented");
+  default: return set_error(I0,-solver.blocksize);
   }
 }
 
@@ -115,7 +115,7 @@ amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blo
 #define BLOCKSIZE(N)  case N: return block_create<amgclcTvTiAMGPrecon,BlockAMGPrecon<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
    BLOCKSIZES
 #undef BLOCKSIZE
-  default: return set_error(S0,"Blocksize "+std::to_string(blocksize)+" not implemented");
+  default: return set_error(S0,-blocksize);
  }   
 }
 
@@ -130,7 +130,7 @@ amgclcInfo  amgclcTvTiAMGPreconApply(amgclcTvTiAMGPrecon solver, Tv *sol, Tv *rh
 #define BLOCKSIZE(N)   case N:  return block_apply<amgclcTvTiAMGPrecon,BlockAMGPrecon<Tv,N>,Tv,N>(solver,sol,rhs);
    BLOCKSIZES
 #undef BLOCKSIZE
-  default: return set_error(I0,"Blocksize "+std::to_string(solver.blocksize)+" not implemented");
+  default: return set_error(I0,-solver.blocksize);
   }
 }
 
@@ -159,7 +159,7 @@ amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blo
 #define BLOCKSIZE(N)   case N: return block_create<amgclcTvTiRLXPrecon,BlockRLXPrecon<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
    BLOCKSIZES
 #undef BLOCKSIZE
- default: return set_error(S0,"Blocksize "+std::to_string(blocksize)+" not implemented");
+ default: return set_error(S0,-blocksize);
   }   
 
 }
@@ -175,7 +175,7 @@ amgclcInfo amgclcTvTiRLXPreconApply(amgclcTvTiRLXPrecon solver, Tv *sol, Tv *rhs
 #define BLOCKSIZE(N)   case N:  return block_apply<amgclcTvTiRLXPrecon,BlockRLXPrecon<Tv,N>,Tv,N>(solver,sol,rhs);
    BLOCKSIZES
 #undef BLOCKSIZE
-  default: return set_error(I0,"Blocksize "+std::to_string(solver.blocksize)+" not implemented");
+  default: return set_error(I0,-solver.blocksize);
   }
 }
 

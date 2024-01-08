@@ -42,14 +42,12 @@ template<typename S> S initialize_solver(S& solver,int blocksize)
   solver.error_state=0;
   solver.handle=0;
   solver.blocksize=blocksize;
-  solver.error_buffer[0]='\0';
   return solver;
 }
 
 template<typename I> I initialize_info(I& info)
 {
   info.error_state=0;
-  info.error_buffer[0]='\0';
   info.iters=0;
   info.residual=0.0;
   return info;
@@ -58,15 +56,13 @@ template<typename I> I initialize_info(I& info)
 
 template<typename S> S set_error(S& solver, std::exception &e)
 {
-  strncpy(solver.error_buffer,e.what(),AMGCL_C_ERROR_BUFFER_SIZE);
   solver.error_state=1;
   return solver;
 }
 
-template<typename S> S set_error(S& solver, const std::string str)
+template<typename S> S set_error(S& solver, int state)
 {
-  strncpy(solver.error_buffer,str.c_str(),AMGCL_C_ERROR_BUFFER_SIZE);
-  solver.error_state=1;
+  solver.error_state=state;
   return solver;
 }
 

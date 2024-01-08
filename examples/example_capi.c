@@ -206,7 +206,7 @@ int run(int n0, int blocksize)
   amgprecon=amgclcDIAMGPreconCreate(n,ia,ja,a,blocksize,amgpreconparams);
   printf("handle:%p\n",amgprecon.handle);
   if (amgprecon.error_state)
-    printf("error:%s\n\n",amgprecon.error_buffer);
+    printf("error:%d\n\n",amgprecon.error_state);
 
   amgpreconparams="{'coarsening': { 'type': 'smoothed_aggregation'},   'relax': {'type': 'ilu0'} }";
   amgprecon=amgclcDIAMGPreconCreate(n,ia,ja,a,blocksize,amgpreconparams);
