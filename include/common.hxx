@@ -1,3 +1,9 @@
+#include <istream>
+#include <iostream>
+#include <regex>
+#include <exception>
+#include <cstring>
+
 #include <amgcl/backend/builtin.hpp>
 #include <amgcl/make_solver.hpp>
 #include <amgcl/amg.hpp>
@@ -11,10 +17,6 @@
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <istream>
-#include <iostream>
-#include <regex>
-#include <complex.h>
 
 #include "amgcl_c.h"
 
@@ -35,35 +37,90 @@ template <typename S, typename T> void destroy(S solver)
   delete static_cast<T*>(solver.handle);
 }
 
+template<typename S> S initialize_solver(S& solver,int blocksize)
+{
+  solver.error_state=0;
+  solver.handle=0;
+  solver.blocksize=blocksize;
+  solver.error_buffer[0]='\0';
+  return solver;
+}
+
+template<typename I> I initialize_info(I& info)
+{
+  info.error_state=0;
+  info.error_buffer[0]='\0';
+  info.iters=0;
+  info.residual=0.0;
+  return info;
+}
+
+
+template<typename S> S set_error(S& solver, std::exception &e)
+{
+  strncpy(solver.error_buffer,e.what(),AMGCL_C_ERROR_BUFFER_SIZE);
+  solver.error_state=1;
+  return solver;
+}
+
+template<typename S> S set_error(S& solver, const std::string str)
+{
+  strncpy(solver.error_buffer,str.c_str(),AMGCL_C_ERROR_BUFFER_SIZE);
+  solver.error_state=1;
+  return solver;
+}
+
+
 template<typename S, typename T, typename Tv, typename Ti> S create(Ti n,Ti *ia, Ti *ja, Tv *a, char *params)
 {
   S solver;
-  solver.handle=static_cast<void*>(new T(make_matrix_tuple(n,ia,ja,a), boost_params(params) ));
-  solver.blocksize = 1;
+  initialize_solver(solver,1);
+  try
+  {
+    solver.handle=static_cast<void*>(new T(make_matrix_tuple(n,ia,ja,a), boost_params(params) ));
+  }
+  catch (std::exception &e)
+  {
+    set_error(solver,e);
+    return solver;
+  }
   return solver;
 }
 
 template<typename S, typename T, typename Tv, typename Ti, int N> S block_create(Ti n,Ti *ia, Ti *ja, Tv *a, char *params)
 {
   S solver;
-  auto A=make_matrix_tuple(n,ia,ja,a);
-  auto Ab = amgcl::adapter::block_matrix<amgcl::static_matrix<Tv, N, N>>(A);
-  solver.handle=static_cast<void*>(new T(Ab, boost_params(params) ));
-  solver.blocksize=N;
+  initialize_solver(solver,N);
+  try
+  {
+    auto A=make_matrix_tuple(n,ia,ja,a);
+    auto Ab = amgcl::adapter::block_matrix<amgcl::static_matrix<Tv, N, N>>(A);
+    solver.handle=static_cast<void*>(new T(Ab, boost_params(params) ));
+  }
+  catch (std::exception &e)
+  {
+    set_error(solver,e);
+  }
   return solver;
 }
 
 template <typename S, typename T, typename Tv> amgclcInfo solve(S _solver, Tv *sol, Tv *rhs)
 {
   amgclcInfo info;
-  auto solver = static_cast<T*>(_solver.handle);
-  
-  auto n = amgcl::backend::rows(solver->system_matrix());
-  auto Sol=amgcl::make_iterator_range(sol, sol + n);
-  auto Rhs=amgcl::make_iterator_range(rhs, rhs + n);
-  
-  std::tie(info.iters, info.residual) = (*solver)(Rhs,Sol);
-  
+  initialize_info(info);
+
+  try
+  {
+    auto solver = static_cast<T*>(_solver.handle);
+    auto n = amgcl::backend::rows(solver->system_matrix());
+    auto Sol=amgcl::make_iterator_range(sol, sol + n);
+    auto Rhs=amgcl::make_iterator_range(rhs, rhs + n);
+    std::tie(info.iters, info.residual) = (*solver)(Rhs,Sol);
+  }
+  catch (std::exception &e)
+  {
+    set_error(info,e);
+  }
   return info;
 }
 
@@ -71,42 +128,69 @@ template <typename S, typename T, typename Tv> amgclcInfo solve(S _solver, Tv *s
 template <typename S, typename T, typename Tv, int N> amgclcInfo block_solve(S _solver, Tv *sol, Tv *rhs)
 {
   amgclcInfo info;
-  auto solver = static_cast<T*>(_solver.handle);
+  initialize_info(info);
 
-  auto bsol=reinterpret_cast<amgcl::static_matrix<double, N, 1>*>(sol);
-  auto brhs=reinterpret_cast<amgcl::static_matrix<double, N, 1>*>(rhs);
-  auto n = amgcl::backend::rows(solver->system_matrix());
-  auto Sol=amgcl::make_iterator_range(bsol, bsol + n);
-  auto Rhs=amgcl::make_iterator_range(brhs, brhs + n);
-  
-  std::tie(info.iters, info.residual) = (*solver)(Rhs,Sol);
+  try
+  {
+    auto solver = static_cast<T*>(_solver.handle);
+    auto bsol=reinterpret_cast<amgcl::static_matrix<double, N, 1>*>(sol);
+    auto brhs=reinterpret_cast<amgcl::static_matrix<double, N, 1>*>(rhs);
+    auto n = amgcl::backend::rows(solver->system_matrix());
+    auto Sol=amgcl::make_iterator_range(bsol, bsol + n);
+    auto Rhs=amgcl::make_iterator_range(brhs, brhs + n);
+    
+    std::tie(info.iters, info.residual) = (*solver)(Rhs,Sol);
+  }
+  catch (std::exception &e)
+  {
+    set_error(info,e);
+  }
   
   return info;
 }
 
-template <typename S, typename T,typename Tv> void apply(S _solver, Tv *sol, Tv *rhs)
+template <typename S, typename T,typename Tv> amgclcInfo apply(S _solver, Tv *sol, Tv *rhs)
 {
-  auto solver = static_cast<T*>(_solver.handle);
+  amgclcInfo info;
+  initialize_info(info);
   
-  auto n = amgcl::backend::rows(solver->system_matrix());
-  auto Sol=amgcl::make_iterator_range(sol, sol + n);
-  auto Rhs=amgcl::make_iterator_range(rhs, rhs + n);
-  
-  solver->apply(Rhs,Sol);
+  try
+  {
+    auto solver = static_cast<T*>(_solver.handle);
+    auto n = amgcl::backend::rows(solver->system_matrix());
+    auto Sol=amgcl::make_iterator_range(sol, sol + n);
+    auto Rhs=amgcl::make_iterator_range(rhs, rhs + n);
+    solver->apply(Rhs,Sol);
+  }
+  catch(std::exception &e)
+  {
+    set_error(info,e);
+  }
+  return info;
 }
 
 
-template <typename S, typename T,typename Tv, int N> void block_apply(S _solver, Tv *sol, Tv *rhs)
+template <typename S, typename T,typename Tv, int N>  amgclcInfo block_apply(S _solver, Tv *sol, Tv *rhs)
 {
-  auto solver = static_cast<T*>(_solver.handle);
+  amgclcInfo info;
+  initialize_info(info);
   
-  auto bsol=reinterpret_cast<amgcl::static_matrix<double, N, 1>*>(sol);
-  auto brhs=reinterpret_cast<amgcl::static_matrix<double, N, 1>*>(rhs);
-  auto n = amgcl::backend::rows(solver->system_matrix());
-  auto Sol=amgcl::make_iterator_range(bsol, bsol + n);
-  auto Rhs=amgcl::make_iterator_range(brhs, brhs + n);
+  try
+  {
+    auto solver = static_cast<T*>(_solver.handle);
+    auto bsol=reinterpret_cast<amgcl::static_matrix<double, N, 1>*>(sol);
+    auto brhs=reinterpret_cast<amgcl::static_matrix<double, N, 1>*>(rhs);
+    auto n = amgcl::backend::rows(solver->system_matrix());
+    auto Sol=amgcl::make_iterator_range(bsol, bsol + n);
+    auto Rhs=amgcl::make_iterator_range(brhs, brhs + n);
+    solver->apply(Rhs,Sol);
+  }
+  catch(std::exception &e)
+  {
+    set_error(info,e);
+  }
   
-  solver->apply(Rhs,Sol);
+  return info;
 }
 
 

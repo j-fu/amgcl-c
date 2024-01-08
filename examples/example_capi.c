@@ -123,7 +123,7 @@ int run(int n0, int blocksize)
   int i;
   
   sample_problem(n0, &n, &nnz, &ia, &ja, &a);
-  printf("n0=%d n=%d nnz=%d blocksize=%d\n",n0,n,nnz,blocksize);
+  printf("\n\n*** n0=%d n=%d nnz=%d blocksize=%d ***\n",n0,n,nnz,blocksize);
   u=(double*)calloc(n,sizeof(double));
   u0=(double*)calloc(n,sizeof(double));
   v=(double*)calloc(n,sizeof(double));
@@ -147,7 +147,7 @@ int run(int n0, int blocksize)
     myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
   myresidual=sqrt(myresidual);
-  printf("\namg solver: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
+  printf("amg solver: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
   if (n0==60)
   {
     TEST(info.residual<1.0e-10);
@@ -180,7 +180,7 @@ int run(int n0, int blocksize)
   {
     TEST(info.residual<1.0e-10);
     TEST(myresidual<1.0e-10);
-    TEST( fabs(myresidual-info.residual)<1.0e-14);
+    TEST(fabs(myresidual-info.residual)<1.0e-14);
   }
 
   /*
@@ -200,8 +200,15 @@ int run(int n0, int blocksize)
   }
   myresidual0=sqrt(myresidual0);
   
-  char *amgpreconparams="{'coarsening': { 'type': 'smoothed_aggregation'},   'relax': {'type': 'ilu0'} }";
-  
+  char *amgpreconparams="{'coarsening': { 'type: 'smoothed_aggregation'},   'relax': {'type': 'ilu0'} }";
+
+  printf("\ntry exception handling:\n");
+  amgprecon=amgclcDIAMGPreconCreate(n,ia,ja,a,blocksize,amgpreconparams);
+  printf("handle:%p\n",amgprecon.handle);
+  if (amgprecon.error_state)
+    printf("error:%s\n\n",amgprecon.error_buffer);
+
+  amgpreconparams="{'coarsening': { 'type': 'smoothed_aggregation'},   'relax': {'type': 'ilu0'} }";
   amgprecon=amgclcDIAMGPreconCreate(n,ia,ja,a,blocksize,amgpreconparams);
   amgclcDIAMGPreconApply(amgprecon,u,v);
   amgclcDIAMGPreconDestroy(amgprecon);
@@ -280,6 +287,7 @@ int main(int argc, char** argv)
     n0=atoi(argv[1]);
   }
   run(n0,1);
+
   n0%2==0 && run(n0,2);
   n0%3==0 && run(n0,3);
   n0%4==0 && run(n0,4);
