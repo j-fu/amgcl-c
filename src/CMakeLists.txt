@@ -28,8 +28,20 @@ add_custom_command(
                              DEPENDS amgcl_tv_ti.cxx.in
                              )
 
+add_custom_command(
+    OUTPUT  common.cxx
+    COMMAND ${CMAKE_COMMAND} -D inputfile=${CMAKE_CURRENT_SOURCE_DIR}/common.cxx.in
+                             -D BLOCKSIZES="${BLOCKSIZES}"
+                             -D outputfile=${CMAKE_CURRENT_BINARY_DIR}/common.cxx
+                             -D TVTI="DL"
+                             -D TV="double"
+                             -D TI="${INT64_T}"
+                             -P ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/specialize.cmake
+                             DEPENDS common.cxx.in
+                             )
 
-add_library(amgcl_c SHARED ${SOURCES} default_params.cxx)
+
+add_library(amgcl_c SHARED ${SOURCES} default_params.cxx common.cxx)
 add_dependencies(amgcl_c AMGCL amgcl_c_h)
 target_include_directories(amgcl_c
   PUBLIC
