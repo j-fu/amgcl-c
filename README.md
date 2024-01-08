@@ -16,25 +16,28 @@ Currently, AMGCL_C provides two interfaces:
   - `...Create` parameters:
      -  `n,ia,ja,a`: Zero-based indexing CRS sparse matrix data
      -  `blocksize`: If blocksize >0, group unknowns into blocks of given size and cast the matrix internally to a sparse matrix of
-        `blocksize x blocksize` static matrices. By default, block sizes 1...8 are instantiated. 
+        `blocksize x blocksize` static matrices. By default, block sizes 1...8 are instantiated.
+        Call `int amgclcBlocksizeInstantiated(blocksize)` to check if a given blocksize is instantiated.
      -  `params`: JSON string containing parameter data. For easier escaping, `'` characters can be used as string delimiters instead of `"`. After the corresponding replacement, the string is parsed  by    [`boost::property_tree::json_parser::read_json`](https://www.boost.org/doc/libs/release/libs/property_tree/). This parser aborts upon syntax errors. When calling from C++, raw strings can be used to avoid the need of escaping end of line and `"` characters.
   - `...Apply` parameters:
      - `sol, rhs`: zero-offset vectors. Length is determined from the created solver/preconditioner
   -  Data structure returned by iterative methods:
-
 ```c
 typedef struct {
   int iters;
   double residual;
+  int error_state;
 }  amgclcInfo;
 ```
+
+The `error_state` field in `amgclInfo` and the solver structs can be used to check for errors.
 
 The only backend supported in the moment is AMGCL's default OpenMP parallel backend.
 Please note that on Apple systems, OpenMP probably will not work (unless CMake
 finds OpenMP).
 
 ```c
-typedef struct{ void *handle; int blocksize;} amgclcDIAMGSolver;
+typedef struct{ void *handle; int blocksize;int error_state;} amgclcDIAMGSolver;
 amgclcDIAMGSolver amgclcDIAMGSolverCreate(int n, int *ia, int *ja, double *a, int blocksize, char *params);
 amgclcInfo amgclcDIAMGSolverApply(amgclcDIAMGSolver solver, double *sol, double *rhs);
 void amgclcDIAMGSolverDestroy(amgclcDIAMGSolver solver);
@@ -58,7 +61,7 @@ Default parameters:
 ### Single level relaxation preconditioned Krylov subspace iterative solver.
 
 ```c
-typedef struct{ void *handle; int blocksize;} amgclcDIRLXSolver;
+typedef struct{ void *handle; int blocksize;int error_state;} amgclcDIRLXSolver;
 amgclcDIRLXSolver amgclcDIRLXSolverCreate(int n, int *ia, int *ja, double *a, int blocksize, char *params);
 amgclcInfo amgclcDIRLXSolverApply(amgclcDIRLXSolver solver, double *sol, double *rhs);
 void amgclcDIRLXSolverDestroy(amgclcDIRLXSolver solver);
@@ -76,7 +79,7 @@ Default parameters:
 ### One AMG preconditioning step
 
 ```c
-typedef struct{ void *handle; int blocksize;} amgclcDIAMGPrecon;
+typedef struct{ void *handle; int blocksize;int error_state;} amgclcDIAMGPrecon;
 amgclcDIAMGPrecon amgclcDIAMGPreconCreate(int n, int *ia, int *ja, double *a, int blocksize, char *params);
 void amgclcDIAMGPreconApply(amgclcDIAMGPrecon solver, double *sol, double *rhs);
 void amgclcDIAMGPreconDestroy(amgclcDIAMGPrecon solver);
@@ -94,7 +97,7 @@ Default parameters:
 ### One single level relaxation  preconditioning step.
 
 ```c
-typedef struct{ void *handle; int blocksize;} amgclcDIRLXPrecon;
+typedef struct{ void *handle; int blocksize;int error_state;} amgclcDIRLXPrecon;
 amgclcDIRLXPrecon amgclcDIRLXPreconCreate(int n, int *ia, int *ja, double *a, int blocksize, char *params);
 void amgclcDIRLXPreconApply(amgclcDIRLXPrecon solver, double *sol, double *rhs);
 void amgclcDIRLXPreconDestroy(amgclcDIRLXPrecon solver);
