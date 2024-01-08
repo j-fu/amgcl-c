@@ -56,12 +56,18 @@ template<typename I> I initialize_info(I& info)
 
 template<typename S> S set_error(S& solver, std::exception &e)
 {
+  std::cerr << "AMGCL_C: amgcl exception: " << e.what() << std::endl;
   solver.error_state=1;
   return solver;
 }
 
 template<typename S> S set_error(S& solver, int state)
 {
+  if (state <0)
+    std::cerr << "AMGCL_C: Blocksize not implemented:  " << -state << std::endl;
+  else
+    std::cerr << "AMGCL_C: Error:  " << state << std::endl;
+    
   solver.error_state=state;
   return solver;
 }
