@@ -1,15 +1,5 @@
 #include "common.hxx"
 
-int amgclcTvTiBlocksizeInstantiated(int blocksize)
-{
-  switch (blocksize)
-  {
-#define BLOCKSIZE(N) case N: return 1;
-    BLOCKSIZES
-#undef BLOCKSIZE
-  default: return 0;
-  }   
-}
 
 amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
 {

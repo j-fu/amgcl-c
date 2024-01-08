@@ -119,11 +119,18 @@ int run(int n0, int blocksize)
   amgclcDIRLXSolver rlxsolver;
   amgclcDIRLXPrecon rlxprecon;
   amgclcDIAMGPrecon amgprecon;
+
   
   int i;
+
+
+
   
   sample_problem(n0, &n, &nnz, &ia, &ja, &a);
+
   printf("\n\n*** n0=%d n=%d nnz=%d blocksize=%d ***\n",n0,n,nnz,blocksize);
+  TEST(amgclcBlocksizeInstantiated(blocksize));
+
   u=(double*)calloc(n,sizeof(double));
   u0=(double*)calloc(n,sizeof(double));
   v=(double*)calloc(n,sizeof(double));
@@ -286,6 +293,8 @@ int main(int argc, char** argv)
   {
     n0=atoi(argv[1]);
   }
+
+  TEST(!amgclcBlocksizeInstantiated(0));
   run(n0,1);
 
   n0%2==0 && run(n0,2);
