@@ -81,7 +81,7 @@ Default parameters:
 ```c
 typedef struct{ void *handle; int blocksize;int error_state;} amgclcDIAMGPrecon;
 amgclcDIAMGPrecon amgclcDIAMGPreconCreate(int n, int *ia, int *ja, double *a, int blocksize, char *params);
-void amgclcDIAMGPreconApply(amgclcDIAMGPrecon solver, double *sol, double *rhs);
+amgclcInfo amgclcDIAMGPreconApply(amgclcDIAMGPrecon solver, double *sol, double *rhs);
 void amgclcDIAMGPreconDestroy(amgclcDIAMGPrecon solver);
 ```
 
@@ -99,7 +99,7 @@ Default parameters:
 ```c
 typedef struct{ void *handle; int blocksize;int error_state;} amgclcDIRLXPrecon;
 amgclcDIRLXPrecon amgclcDIRLXPreconCreate(int n, int *ia, int *ja, double *a, int blocksize, char *params);
-void amgclcDIRLXPreconApply(amgclcDIRLXPrecon solver, double *sol, double *rhs);
+amgclcInfo amgclcDIRLXPreconApply(amgclcDIRLXPrecon solver, double *sol, double *rhs);
 void amgclcDIRLXPreconDestroy(amgclcDIRLXPrecon solver);
 ```
 
