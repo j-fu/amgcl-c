@@ -1,0 +1,73 @@
+#ifndef AMGCL_C_TvTi_H
+#define AMGCL_C_TvTi_H
+
+#ifndef STDINT_INCLUDED
+#define STDINT_INCLUDED
+
+#include <stdint.h>
+
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+  
+#ifndef AMGCLC_INFO
+#define AMGCLC_INFO  
+
+#define AMGCL_C_SOLVER_STRUCT struct{void *handle; int blocksize; int error_state;}
+
+  
+/** 
+    \brief Info structure
+*/
+  typedef struct {
+    int iters;
+    double residual;
+    int error_state;
+  }  amgclcInfo;
+
+  int amgclcBlocksizeInstantiated(int blocksize);
+
+#endif
+  
+/** 
+    \brief algebraic multigrid preconditioned Krylov subspace iterative solver.
+    
+*/
+  typedef AMGCL_C_SOLVER_STRUCT amgclcTvTiAMGSolver;
+  amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(Ti n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+  amgclcInfo amgclcTvTiAMGSolverApply(amgclcTvTiAMGSolver solver, Tv *sol, Tv *rhs);
+  void amgclcTvTiAMGSolverDestroy(amgclcTvTiAMGSolver solver);
+  
+/** 
+    \brief Single level relaxation preconditioned Krylov subspace iterative solver.
+*/
+  typedef  AMGCL_C_SOLVER_STRUCT amgclcTvTiRLXSolver;
+  amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(Ti n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+  amgclcInfo  amgclcTvTiRLXSolverApply(amgclcTvTiRLXSolver solver, Tv *sol, Tv *rhs);
+  void amgclcTvTiRLXSolverDestroy(amgclcTvTiRLXSolver solver);
+  
+/** 
+    \brief One algebraic multigrid preconditioning step.
+*/
+  typedef  AMGCL_C_SOLVER_STRUCT amgclcTvTiAMGPrecon;
+  amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(Ti n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+  amgclcInfo amgclcTvTiAMGPreconApply(amgclcTvTiAMGPrecon solver, Tv *sol, Tv *rhs);
+  void amgclcTvTiAMGPreconDestroy(amgclcTvTiAMGPrecon solver);
+  
+/** 
+    \brief One single level relaxation  preconditioning step.
+*/
+  typedef  AMGCL_C_SOLVER_STRUCT amgclcTvTiRLXPrecon;
+  amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(Ti n, Ti *ia, Ti *ja, Tv *a, int blocksize, char *params);
+  amgclcInfo  amgclcTvTiRLXPreconApply(amgclcTvTiRLXPrecon solver, Tv *sol, Tv *rhs);
+  void amgclcTvTiRLXPreconDestroy(amgclcTvTiRLXPrecon solver);
+  
+  
+  
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+#endif

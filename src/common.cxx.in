@@ -1,0 +1,13 @@
+#include "common.hxx"
+
+int amgclcBlocksizeInstantiated(int blocksize)
+{
+  switch (blocksize)
+  {
+  case 1: return 1;
+#define BLOCKSIZE(N) case N: return 1;
+    BLOCKSIZES
+#undef BLOCKSIZE
+  default: return 0;
+  }   
+}

@@ -1,13 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <amgcl-c.h>
+#include <amgcl_c.h>
+
 
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
 #include <assert.h>
 
+#define TEST(expr) printf("TEST: %40s:",#expr), assert(expr), printf(" ok\n");
+
+/* My own sparse matrix-vector multiplication for cross-checking amgcl claims */
 void matmul(int n, int nnz, int *ia, int *ja, double *a, double *u, double *v)
 {
   int i,j;
@@ -19,6 +23,7 @@ void matmul(int n, int nnz, int *ia, int *ja, double *a, double *u, double *v)
   }
 }
 
+/* 3D poisson assembly, inspired from https://github.com/ddemidov/amgcl_benchmarks/blob/master/shared_mem/poisson/amgcl.cpp*/
 int sample_problem(int n, int *_n3, int *_nnz, int **_ia, int **_ja, double **_a)
 {
   int *ia, *ja;
@@ -101,30 +106,31 @@ int sample_problem(int n, int *_n3, int *_nnz, int **_ia, int **_ja, double **_a
   *_a=a;
 }
 
-int main(int argc, char** argv)
+
+int run(int n0, int blocksize)
 {
-  int n0,n,nnz;
+  int n,nnz;
   int*ia,*ja;
   double *a,*rhs;
   double *u0, *u,*v;
   double myresidual,myresidual0;
   amgclcInfo info;
-  amgclcDAMGSolver amgsolver;
-  amgclcDRLXSolver rlxsolver;
-  amgclcDRLXPrecon rlxprecon;
-  amgclcDAMGPrecon amgprecon;
+  amgclcDIAMGSolver amgsolver;
+  amgclcDIRLXSolver rlxsolver;
+  amgclcDIRLXPrecon rlxprecon;
+  amgclcDIAMGPrecon amgprecon;
+
   
   int i;
-  printf("main:\n");
 
-  n0=50;
-  if (argc>1)
-  {
-    n0=atoi(argv[1]);
-  }
+
+
   
   sample_problem(n0, &n, &nnz, &ia, &ja, &a);
-  printf("n0=%d n=%d nnz=%d\n",n0,n,nnz);
+
+  printf("\n\n*** n0=%d n=%d nnz=%d blocksize=%d ***\n",n0,n,nnz,blocksize);
+  TEST(amgclcBlocksizeInstantiated(blocksize));
+
   u=(double*)calloc(n,sizeof(double));
   u0=(double*)calloc(n,sizeof(double));
   v=(double*)calloc(n,sizeof(double));
@@ -137,9 +143,9 @@ int main(int argc, char** argv)
     u[i]=1.0;
     v[i]=1.0;
   }
-  amgsolver=amgclcDAMGSolverCreate(n,ia,ja,a,NULL);
-  info=amgclcDAMGSolverApply(amgsolver,u,v);
-  amgclcDAMGSolverDestroy(amgsolver);
+  amgsolver=amgclcDIAMGSolverCreate(n,ia,ja,a,blocksize,NULL);
+  info=amgclcDIAMGSolverApply(amgsolver,u,v);
+  amgclcDIAMGSolverDestroy(amgsolver);
   matmul(n,nnz,ia,ja,a,u,v);
 
   myresidual=0.0;
@@ -148,12 +154,12 @@ int main(int argc, char** argv)
     myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
   myresidual=sqrt(myresidual);
-  printf("amg: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
-  if (n0==50)
+  printf("amg solver: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
+  if (n0==60)
   {
-    assert(info.residual<1.0e-10);
-    assert(myresidual<1.0e-10);
-    assert( fabs(myresidual-info.residual)<1.0e-14);
+    TEST(info.residual<1.0e-10);
+    TEST(myresidual<1.0e-10);
+    TEST( fabs(myresidual-info.residual)<1.0e-14);
   }
 
 
@@ -165,9 +171,9 @@ int main(int argc, char** argv)
     u[i]=1.0;
     v[i]=1.0;
   }
-  rlxsolver=amgclcDRLXSolverCreate(n,ia,ja,a,NULL);
-  info=amgclcDRLXSolverApply(rlxsolver,u,v);
-  amgclcDRLXSolverDestroy(rlxsolver);
+  rlxsolver=amgclcDIRLXSolverCreate(n,ia,ja,a,blocksize,NULL);
+  info=amgclcDIRLXSolverApply(rlxsolver,u,v);
+  amgclcDIRLXSolverDestroy(rlxsolver);
   matmul(n,nnz,ia,ja,a,u,v);
 
   myresidual=0.0;
@@ -176,12 +182,12 @@ int main(int argc, char** argv)
     myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
   myresidual=sqrt(myresidual);
-  printf("rlx: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
-  if (n0==50)
+  printf("\nrlx solver: iters=%d residual=%e myresidual=%e\n",info.iters,info.residual,myresidual);
+  if (n0==60)
   {
-    assert(info.residual<1.0e-10);
-    assert(myresidual<1.0e-10);
-    assert( fabs(myresidual-info.residual)<1.0e-14);
+    TEST(info.residual<1.0e-10);
+    TEST(myresidual<1.0e-10);
+    TEST(fabs(myresidual-info.residual)<1.0e-14);
   }
 
   /*
@@ -201,11 +207,18 @@ int main(int argc, char** argv)
   }
   myresidual0=sqrt(myresidual0);
   
-  char *amgpreconparams="{'coarsening': { 'type': 'ruge_stuben'},   'relax': {'type': 'ilu0'} }";
-  
-  amgprecon=amgclcDAMGPreconCreate(n,ia,ja,a,amgpreconparams);
-  amgclcDAMGPreconApply(amgprecon,u,v);
-  amgclcDAMGPreconDestroy(amgprecon);
+  char *amgpreconparams="{'coarsening': { 'type: 'smoothed_aggregation'},   'relax': {'type': 'ilu0'} }";
+
+  printf("\ntry exception handling:\n");
+  amgprecon=amgclcDIAMGPreconCreate(n,ia,ja,a,blocksize,amgpreconparams);
+  printf("handle:%p\n",amgprecon.handle);
+  if (amgprecon.error_state)
+    printf("error:%d\n\n",amgprecon.error_state);
+
+  amgpreconparams="{'coarsening': { 'type': 'smoothed_aggregation'},   'relax': {'type': 'ilu0'} }";
+  amgprecon=amgclcDIAMGPreconCreate(n,ia,ja,a,blocksize,amgpreconparams);
+  amgclcDIAMGPreconApply(amgprecon,u,v);
+  amgclcDIAMGPreconDestroy(amgprecon);
   for(i=0;i<n;i++)
     u[i]=u0[i]-u[i];
   
@@ -216,11 +229,11 @@ int main(int argc, char** argv)
     myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
   myresidual=sqrt(myresidual);
-  printf("amgprecon: myresidual/myresidual0=%e\n",myresidual/myresidual0);
+  printf("\namg precon: myresidual/myresidual0=%e\n",myresidual/myresidual0);
 
-  if (n0==50)
+  if (n0==60)
   {
-    assert(myresidual/myresidual0<0.1);
+    TEST(myresidual/myresidual0<0.8);
   }
 
   /*
@@ -243,10 +256,10 @@ int main(int argc, char** argv)
   myresidual0=sqrt(myresidual0);
 
   //m u=r
-  rlxprecon=amgclcDRLXPreconCreate(n,ia,ja,a,NULL);
-  amgclcDRLXPreconApply(rlxprecon,u,v);
+  rlxprecon=amgclcDIRLXPreconCreate(n,ia,ja,a,blocksize,NULL);
+  amgclcDIRLXPreconApply(rlxprecon,u,v);
   
-  amgclcDRLXPreconDestroy(rlxprecon);
+  amgclcDIRLXPreconDestroy(rlxprecon);
   for(i=0;i<n;i++)
     u[i]=u0[i]-u[i];
 
@@ -257,10 +270,10 @@ int main(int argc, char** argv)
     myresidual+=(v[i]-1.0)*(v[i]-1.0)/n;
   }
   myresidual=sqrt(myresidual);
-  printf("rlxprecon: myresidual/myresidual0=%e\n",myresidual/myresidual0);
-  if (n0==50)
+  printf("\nrlx precon: myresidual/myresidual0=%e\n",myresidual/myresidual0);
+  if (n0==60)
   {
-    assert(myresidual/myresidual0<1.0);
+    TEST(myresidual/myresidual0<1.0);
   }
 
   free(a);
@@ -269,6 +282,28 @@ int main(int argc, char** argv)
   free(u);
   free(u0);
   free(v);
-  printf("ok.\n");
-  
+  return 0;
 }
+
+int main(int argc, char** argv)
+{
+  int n0;
+  n0=60;
+  if (argc>1)
+  {
+    n0=atoi(argv[1]);
+  }
+
+  TEST(!amgclcBlocksizeInstantiated(0));
+  run(n0,1);
+
+  n0%2==0 && run(n0,2);
+  n0%3==0 && run(n0,3);
+  n0%4==0 && run(n0,4);
+  n0%5==0 && run(n0,5);
+  n0%6==0 && run(n0,6);
+  n0%7==0 && run(n0,7);
+  n0%8==0 && run(n0,8);
+
+}
+

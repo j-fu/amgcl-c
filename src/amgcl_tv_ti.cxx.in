@@ -1,0 +1,182 @@
+#include "common.hxx"
+
+
+amgclcTvTiAMGSolver amgclcTvTiAMGSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+{
+ amgclcTvTiAMGSolver S0;
+ initialize_solver(S0,blocksize);
+ 
+ if (params==NULL || strlen(params)==0)
+   params=(char *)amgsolverparams;
+
+ switch (blocksize)
+ {
+ case 1:  return create<amgclcTvTiAMGSolver,AMGSolver<Tv>,Tv,Ti >(n,ia,ja,a,params);
+#define BLOCKSIZE(N) case N: return block_create<amgclcTvTiAMGSolver,BlockAMGSolver<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default: return set_error(S0,-blocksize);
+ }   
+}
+
+amgclcInfo amgclcTvTiAMGSolverApply(amgclcTvTiAMGSolver solver, Tv *sol, Tv *rhs)
+{
+  amgclcInfo I0;
+  initialize_info(I0);
+  
+  switch (solver.blocksize)
+  {
+  case 1:   return solve<amgclcTvTiAMGSolver,AMGSolver<Tv>,Tv>(solver,sol,rhs);
+#define BLOCKSIZE(N)  case N:   return block_solve<amgclcTvTiAMGSolver,BlockAMGSolver<Tv,N>,Tv,N>(solver,sol,rhs); 
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default: return set_error(I0,-solver.blocksize);
+  }
+}
+
+void amgclcTvTiAMGSolverDestroy(amgclcTvTiAMGSolver solver)
+{
+ switch (solver.blocksize)
+ {
+ case 1: destroy<amgclcTvTiAMGSolver,AMGSolver<Tv>>(solver); break;
+#define BLOCKSIZE(N) case N: destroy<amgclcTvTiAMGSolver,BlockAMGSolver<Tv,N>>(solver); break;
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default:;
+ }
+}
+
+amgclcTvTiRLXSolver amgclcTvTiRLXSolverCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+{
+  amgclcTvTiRLXSolver S0;
+  initialize_solver(S0,blocksize);
+
+  if (params==NULL || strlen(params)==0)
+    params=(char *)rlxsolverparams;
+ switch (blocksize)
+ {
+ case 1:  return create<amgclcTvTiRLXSolver,RLXSolver<Tv>,Tv,Ti>(n,ia,ja,a,params);
+#define BLOCKSIZE(N)  case N: return block_create<amgclcTvTiRLXSolver,BlockRLXSolver<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default: return set_error(S0,-blocksize);
+ }   
+}
+
+amgclcInfo amgclcTvTiRLXSolverApply(amgclcTvTiRLXSolver solver, Tv *sol, Tv *rhs)
+{
+  amgclcInfo I0;
+  initialize_info(I0);
+  
+
+  switch (solver.blocksize)
+  {
+  case 1:  return solve<amgclcTvTiRLXSolver,RLXSolver<Tv>, Tv>(solver,sol,rhs);
+#define BLOCKSIZE(N)   case N:   return block_solve<amgclcTvTiRLXSolver,BlockRLXSolver<Tv,N>,Tv,N>(solver,sol,rhs); 
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default: return set_error(I0,-solver.blocksize);
+  }
+}
+
+void amgclcTvTiRLXSolverDestroy(amgclcTvTiRLXSolver solver)
+{
+ switch (solver.blocksize)
+ {
+ case 1: destroy<amgclcTvTiRLXSolver,RLXSolver<Tv>>(solver); break;
+
+#define BLOCKSIZE(N)  case N: destroy<amgclcTvTiRLXSolver,BlockRLXSolver<Tv,N>>(solver); break;
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default:;
+ }
+}
+
+amgclcTvTiAMGPrecon amgclcTvTiAMGPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+{
+ amgclcTvTiAMGPrecon S0;
+ initialize_solver(S0,blocksize);
+  
+ if (params==NULL || strlen(params)==0)
+   params=(char *)amgpreconparams;
+ switch (blocksize)
+ {
+ case 1: return create<amgclcTvTiAMGPrecon,AMGPrecon<Tv>,Tv,Ti>(n,ia,ja,a,params);
+#define BLOCKSIZE(N)  case N: return block_create<amgclcTvTiAMGPrecon,BlockAMGPrecon<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default: return set_error(S0,-blocksize);
+ }   
+}
+
+amgclcInfo  amgclcTvTiAMGPreconApply(amgclcTvTiAMGPrecon solver, Tv *sol, Tv *rhs)
+{
+  amgclcInfo I0;
+  initialize_info(I0);
+  
+  switch (solver.blocksize)
+  {
+  case 1: return apply<amgclcTvTiAMGPrecon,AMGPrecon<Tv>, Tv>(solver,sol,rhs);
+#define BLOCKSIZE(N)   case N:  return block_apply<amgclcTvTiAMGPrecon,BlockAMGPrecon<Tv,N>,Tv,N>(solver,sol,rhs);
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default: return set_error(I0,-solver.blocksize);
+  }
+}
+
+void amgclcTvTiAMGPreconDestroy(amgclcTvTiAMGPrecon solver)
+{
+  switch (solver.blocksize)
+  {
+  case 1: destroy<amgclcTvTiAMGPrecon,AMGPrecon<Tv>>(solver); break;
+#define BLOCKSIZE(N)   case N: destroy<amgclcTvTiAMGPrecon,BlockAMGPrecon<Tv,N>>(solver); break;
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default:;
+  }
+}
+
+amgclcTvTiRLXPrecon amgclcTvTiRLXPreconCreate(Ti n,Ti *ia, Ti *ja, Tv *a,int blocksize, char *params)
+{
+  amgclcTvTiRLXPrecon S0;
+  initialize_solver(S0,blocksize);
+  
+  if (params==NULL || strlen(params)==0)
+    params=(char *)rlxpreconparams;
+  switch (blocksize)
+  {
+  case 1:   return create<amgclcTvTiRLXPrecon,RLXPrecon<Tv>,Tv,Ti>(n,ia,ja,a,params);
+#define BLOCKSIZE(N)   case N: return block_create<amgclcTvTiRLXPrecon,BlockRLXPrecon<Tv,N>,Tv,Ti,N>(n,ia,ja,a,params);
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default: return set_error(S0,-blocksize);
+  }   
+
+}
+
+amgclcInfo amgclcTvTiRLXPreconApply(amgclcTvTiRLXPrecon solver, Tv *sol, Tv *rhs)
+{
+  amgclcInfo I0;
+  initialize_info(I0);
+  
+  switch (solver.blocksize)
+  {
+  case 1: return apply<amgclcTvTiRLXPrecon,RLXPrecon<Tv>,Tv>(solver,sol,rhs);
+#define BLOCKSIZE(N)   case N:  return block_apply<amgclcTvTiRLXPrecon,BlockRLXPrecon<Tv,N>,Tv,N>(solver,sol,rhs);
+   BLOCKSIZES
+#undef BLOCKSIZE
+  default: return set_error(I0,-solver.blocksize);
+  }
+}
+
+void amgclcTvTiRLXPreconDestroy(amgclcTvTiRLXPrecon solver)
+{
+ switch (solver.blocksize)
+ {
+ case 1:  destroy<amgclcTvTiRLXPrecon,RLXPrecon<Tv>>(solver); break;
+#define BLOCKSIZE(N)  case N: destroy<amgclcTvTiRLXPrecon,BlockRLXPrecon<Tv,N>>(solver); break;
+   BLOCKSIZES
+#undef BLOCKSIZE
+ default:;
+ }
+}
