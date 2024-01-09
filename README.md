@@ -1,7 +1,7 @@
 amgcl-c
 ========
 
-Alternative C API for [AMGCL](https://github.com/ddemidov/amgcl).
+Alternative C API for a subset of [AMGCL](https://github.com/ddemidov/amgcl).
 
 The aim is the ability to access single level relaxation preconditioned Krylov methods as well as the possibility to perform single preconditioning steps (both for AMG and for relaxation) via a C interface. Solver parameters are passed as JSON strings.
 It is also planned to build a Julia wrapper to AMGCL based on this code.
