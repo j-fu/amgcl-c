@@ -3,10 +3,17 @@ AMGCL_C
 
 Alternative C API for a subset of [AMGCL](https://github.com/ddemidov/amgcl).
 
-The aim is the ability to access AMG and single level relaxation preconditioned Krylov methods with the additional to perform single preconditioning steps (both for AMG and for relaxation) via a C interface. Solver parameters are passed as JSON strings.
-It is also planned to build a Julia wrapper to AMGCL based on this code.
+The aim is the ability to access AMG and single level relaxation preconditioned Krylov methods with the additional possibility to perform single preconditioning steps (both for AMG and for relaxation) via a C interface. Solver parameters are passed as JSON strings.
+
+If you find this package useful, please  [give credits](https://github.com/ddemidov/amgcl?tab=readme-ov-file#referencing) to the author of AMGCL.
+
+Compiled libraries for this package are available via the [AMGCL_C_jll.jl](https://github.com/JuliaBinaryWrappers/AMGCL_C_jll.jl) Julia  binary package which serves as the backend for the [AMGCLWrap.jl](https://github.com/j-fu/AMGCLWrap.jl) Julia package.
+
 
 ## API Description
+
+For general functionality and possible parameter values, please consult the [AMGCL documentation](https://amgcl.readthedocs.io/en/latest/components.html).
+
 Currently, AMGCL_C provides two interfaces:
 - for `double` numbers and 4 byte int indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDI` as shown in the example below
 - for `double` numbers and 8 byte int indexes, with the [hungarian notation](https://en.wikipedia.org/wiki/Hungarian_notation) prefix `amgclcDL`.
